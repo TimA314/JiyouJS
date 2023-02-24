@@ -1,50 +1,45 @@
-import {
-  generatePrivateKey,
-  relayInit, 
-  getPublicKey,
-  SimplePool,
-  validateEvent,
-  verifySignature,
-  signEvent,
-  getEventHash
-} from 'nostr-tools'
-import { useEffect, useState } from 'react';
-import './App.css';
-import ActionAreaCard from './components/card';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import { ThemeProvider, createTheme, } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-function App() {
-  const [events, setEvents ] = useState([]);
-  let relays = ['wss://nos.lol', 'wss://relay.damus.io', 'wss://nostr.mom']
-  // let privateKey = generatePrivateKey() // `sk` is a hex string
-  // // console.log("pk", privateKey)
-  // let publicKey = getPublicKey(privateKey) // `pk` is a hex string
-  // console.log("publicKey:", publicKey)
-
-  useEffect(()=> {
-    async function start(){
-      const pool = new SimplePool()
+import Home from './pages/Home';
+import LabelBottomNavigation from './components/NavBar';
 
 
-      let events = await pool.list(relays, [{kinds: [1]}])
-      setEvents(events);
-      console.log(events);
-    }
-    start();
-    
-  },[]);
+export default function App() {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = React.useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode],
+  );
   
-  if(events !== []){
-    return (
-      <div className="App">
-        {events.map((event) => (
-            <ActionAreaCard key={event.id} event={event} relays={relays}/>
-        ))}
-      </div>
-    )
-  }
-  else {
-    return <div></div>
-  }
-}
 
-export default App;
+  return (
+    <ThemeProvider theme={theme}>
+      <Box
+        sx={{
+          display: 'flex',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'background.default',
+          color: 'text.primary',
+          borderRadius: 1,
+          p: 3,
+        }}
+      >
+        <Box>
+          <LabelBottomNavigation />
+          <Home />
+        </Box>
+      </Box>
+    </ThemeProvider>
+  );
+}
