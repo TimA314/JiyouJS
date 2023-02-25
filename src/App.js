@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { ThemeProvider, createTheme, } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Home from './pages/Home';
+import Feed from './pages/Feed';
 import LabelBottomNavigation from './components/NavBar';
 
 
@@ -37,7 +37,7 @@ export default function App() {
       >
         <Box>
           <LabelBottomNavigation />
-          <Home />
+          <Feed />
         </Box>
       </Box>
     </ThemeProvider>
