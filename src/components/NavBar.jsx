@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 
+
 export default function LabelBottomNavigation() {
   const [value, setValue] = React.useState(0);
   const ref = React.useRef(null);
@@ -28,10 +29,10 @@ export default function LabelBottomNavigation() {
             setValue(newValue);
           }}
         >
-          <BottomNavigationAction label="Feed" icon={<PublicIcon />} />
-          <BottomNavigationAction label="Follows" icon={<Diversity1Icon />} />
-          <BottomNavigationAction label="Relays" icon={<CellTowerIcon />} />
-          <BottomNavigationAction label="Profile" icon={<AccountCircleIcon />} />
+          <BottomNavigationAction label="Feed" href='/' icon={<PublicIcon />} />
+          <BottomNavigationAction label="Follows" href='/follows' icon={<Diversity1Icon />} />
+          <BottomNavigationAction label="Relays" href='/relays' icon={<CellTowerIcon />} />
+          <BottomNavigationAction label="Profile" href='/profile' icon={<AccountCircleIcon />} />
         </BottomNavigation>
       </Paper>
     </Box>
