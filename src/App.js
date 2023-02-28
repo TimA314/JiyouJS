@@ -8,13 +8,10 @@ import LabelBottomNavigation from './components/NavBar';
 import { Route, Routes } from 'react-router';
 import NewEventForm from './components/NewEventForm';
 import { generatePrivateKey, getPublicKey } from 'nostr-tools';
+import SignIn from './pages/SignIn';
 
 export default function App() {
-  const [relayList, setRelayList] = React.useState(['wss://nos.lol']);
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [sk, setSk] = React.useState(generatePrivateKey());
-  const [pk, setPk] = React.useState(getPublicKey(sk));
-  const Keys = React.createContext(pk);
 
   const theme = React.useMemo(
     () =>
@@ -30,7 +27,6 @@ export default function App() {
 
   return (
       <ThemeProvider theme={theme}>
-        <Keys.Provider value={pk}>
         <Box
           sx={{
             display: 'flex',
@@ -48,12 +44,12 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Feed />} />
               <Route path="/new-event" element={<NewEventForm />} />
-              <Route path="/profile" element={<Feed />} />
+              <Route path="/profile" element={<SignIn />} />
               <Route path="/follows" element={<Feed />} />
+              <Route path="/signin" element={<SignIn />} />
             </Routes>
           </Box>
         </Box>
-        </Keys.Provider>
       </ThemeProvider>
   );
 }

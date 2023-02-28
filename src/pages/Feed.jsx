@@ -1,24 +1,27 @@
 import {React, useEffect, useState } from 'react';
 import ActionAreaCard from '../components/card';
+import { getEvents } from '../redux/nostr';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 import toastr from 'toastr';
 
 
 import { Box, Button } from '@mui/material';
-import { useSelector } from 'react-redux';
 
 function Feed(props) {
-    const relays = useSelector(state => state.relays.relayList);
-    const [events, setEvents ] = useState([]);
+    const dispatch = useDispatch();
+    const relays = useSelector(state => state.nostr.relayList);
+    const events = useSelector(state => state.nostr.events);
 
     console.log(`Relays: ${relays}`);
+    console.log(`Events: ${events}`);
     // newEvent.id = getEventHash(newEvent);
     // newEvent.sig = signEvent(newEvent, sk);
 
 
     
     useEffect(()=> {
-
+        dispatch(getEvents())
     },[]);
 
     if (events != null){
