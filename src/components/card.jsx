@@ -29,7 +29,7 @@ export default async function ActionAreaCard(props) {
                     />
                     <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        {profile.}
+                        {profile}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         {content}
