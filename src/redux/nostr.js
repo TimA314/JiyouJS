@@ -10,14 +10,12 @@ import {
   getEventHash
 } from 'nostr-tools'
 
-const pool = new SimplePool()
-
 
 const nostrInitial = {
     relayList: ['wss://nos.lol'],
-    events: null,
-    privateKey: '',
-    publicKey: '',
+    events: [],
+    privateKey: "",
+    publicKey: "",
 };
 
 export const nostrSlice = createSlice({
@@ -31,15 +29,14 @@ export const nostrSlice = createSlice({
     setPrivateKey: (state, action) => {
       console.log(`setPrivateKey: ${action.payload}`);
       state.privateKey = action.payload;
+      state.publicKey = getPublicKey(action.payload);
     },
-    getEvents: async (state) => {
-      console.log(`Retrieving Events`);
-      state.events = await pool.list(nostrInitial.relayList, [{kinds: [1]}])
-      console.log(`Retrieved Events: ${state.events}`);
+    setEvents: (state, action) => {
+      state.events = action.payload;
     },
   },
 })
 
-export const { setRelays, setPrivateKey, getEvents } = nostrSlice.actions
+export const { setRelays, setPrivateKey, setEvents } = nostrSlice.actions
 
 export default nostrSlice.reducer
