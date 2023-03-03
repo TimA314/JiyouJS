@@ -1,5 +1,5 @@
 import {React, useEffect, useState } from 'react';
-import ActionAreaCard from '../components/card';
+import Note from '../components/Note';
 import { setEvents } from '../redux/nostr';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
@@ -20,17 +20,15 @@ function Feed(props) {
 
     const getEvents = async () => {
         let newEvents = await pool.list(relays, [{kinds: [1]}]);
-        setEventList(newEvents);
-        dispatch(setEvents(newEvents))
-        console.log(`Retrieved Events: ${newEvents}`);
+        let parsedEvents = [];
+        newEvents.forEach((event) => parsedEvents.push(JSON.stringify(event)))
+        setEventList(parsedEvents);
+        dispatch(setEvents(parsedEvents));
+        console.log(`Retrieved Events: ${eventList}`);
     }
-
     
     useEffect(()=> {
-        console.log(`Retrieving Events`);
-        if (eventList === []){
-            getEvents();
-        }
+        getEvents();
     },[]);
 
     if (eventList !== []){
@@ -40,8 +38,8 @@ function Feed(props) {
                     New Event
                 </Button>
                 <Box>
-                    {eventList.map((event) => (
-                        <ActionAreaCard key={event.id} event={event}/>
+                    {eventList.filter((value, index, self) => self.indexOf(value) === index).map((event) => (
+                        <Note key={event.id} event={event}/>
                     ))}
                 </Box>
                 

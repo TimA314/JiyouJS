@@ -11,7 +11,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 
-export default async function ActionAreaCard(props) {
+export default async function Note(props) {
     let content = props.event.content;
     let pubkey = props.event.pubkey;
     let profile = await nip05.queryProfile(pubkey)
