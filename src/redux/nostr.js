@@ -32,6 +32,7 @@ export const nostrSlice = createSlice({
       state.publicKey = getPublicKey(action.payload);
     },
     setEvents: (state, action) => {
+      console.log("setEvents: payload " + action.payload)
       state.events = action.payload;
     },
   },
