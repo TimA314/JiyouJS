@@ -12,7 +12,12 @@ import {
 
 
 const nostrInitial = {
-    relayList: ['wss://nos.lol'],
+    relayList: [
+      'wss://nos.lol',
+      'wss://relay.snort.social',
+      'wss://relay.current.fyi',
+      'wss://nostr.relayer.se',
+    ],
     events: [],
     privateKey: "",
     publicKey: "",
@@ -24,7 +29,7 @@ export const nostrSlice = createSlice({
   reducers: {
     setRelays: (state, action) => {
         console.log(`setRelays: ${action.payload}`)
-        state.relayList = action.payload;
+        state.relayList = [...state.relayList, action.payload];
     },
     setPrivateKey: (state, action) => {
       console.log(`setPrivateKey: ${action.payload}`);

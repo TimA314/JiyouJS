@@ -8,7 +8,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Box, CardActionArea, Button } from '@mui/material';
+import { Box, CardActionArea, Button, Paper } from '@mui/material';
+import CachedIcon from '@mui/icons-material/Cached';
+import Avatar from '@mui/material/Avatar';
 
 
 
@@ -17,6 +19,8 @@ import { Container } from '@mui/system';
 
 function Feed(props) {
     const [eventList, setNewEvents] = useState([]);
+    const [profileList, setProfileList] = useState([]);
+
     const dispatch = useDispatch();
     const relays = useSelector(state => state.nostr.relayList);
     
@@ -27,11 +31,30 @@ function Feed(props) {
     
     const loadEvents = async () => {
         try{
-            let globalEvents = await pool.list(relays, [{kinds: [1]}]);
-            setNewEvents(globalEvents)
+            let globalEvents = await pool.list(relays, [{kinds: [0,1]}]);
+            let profiles = globalEvents.filter((event) => event.kind === 0);
+            let events = globalEvents.filter((event) => event.kind === 1);
+
+            setNewEvents(events)
+            setProfileList(profiles)
+            dispatch(setEvents(events))
         } catch(error) {
             console.log("event error: " + error)
         }
+    }
+    const getProfilePicture = (pubkey) => {
+        let profile =  profileList.find(prof => {
+            return prof.pubkey === pubkey
+            });
+            console.log(profile)
+            if (profile !== undefined){
+                let parsedProfile = JSON.parse(profile.content);
+                console.log(parsedProfile.picture)
+                if (parsedProfile.picture !== undefined){
+                    return parsedProfile.picture.toString();
+                }
+            }
+        return "/static/images/avatar/1.jpg";
     }
 
     useEffect(() => {
@@ -39,30 +62,33 @@ function Feed(props) {
     }, [])
 
     return (
-        <Container>
-            <Box>
-                <Button onClick={loadEvents}>
-                    Load Events
-                </Button>
-                {eventList.map((event) => {
-                    return (
-                        <Container key={event.sig}>
-                            <Box sx={{ width: '100%', maxWidth: 500, margin: "10px auto", textAlign: "center"}}>
-                                <Card sx={{ maxWidth: 345}}>
-                                    <CardActionArea>
-                                        <CardContent>
-                                            <Typography color="text.secondary">
-                                                {event.content}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                </Card>
-                            </Box>
-                        </Container>
-                    )
-                })}
+        <Container width="100%">
+            <Container >
+                <Box >
+                    <Button onClick={loadEvents}>
+                        <CachedIcon />
+                    </Button>
+                </Box>
+            </Container>
+            {eventList.map((event) => {
+                return (
+                    <Container key={event.sig}>
+                        <Box sx={{ width: '100%', maxWidth: 500, margin: "10px auto", textAlign: "center"}}>
+                            <Card sx={{ maxWidth: 1000}}>
+                                <CardActionArea>
+                                <Avatar alt="Remy Sharp" src={getProfilePicture(event.pubkey)} />
+                                    <CardContent>
+                                        <Typography color="text.secondary">
+                                            {event.content}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Box>
+                    </Container>
+                )
+            })}
                 
-            </Box>
         </Container>
     )
 
