@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import { Box, CardActionArea, Button, Paper } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import Avatar from '@mui/material/Avatar';
+import { createAvatar } from '@dicebear/core';
+import { identicon } from '@dicebear/collection';
 
 
 
@@ -21,11 +23,13 @@ function Feed(props) {
     const [eventList, setNewEvents] = useState([]);
     const [profileList, setProfileList] = useState([]);
 
+    const pool = new SimplePool()
     const dispatch = useDispatch();
     const relays = useSelector(state => state.nostr.relayList);
-    
-    const pool = new SimplePool()
-
+    const avatar = createAvatar(identicon, {
+        "seed": "Gracie"
+      });
+      const svg = avatar.toString();
     // newEvent.id = getEventHash(newEvent);
     // newEvent.sig = signEvent(newEvent, sk);
     
@@ -51,10 +55,10 @@ function Feed(props) {
                 let parsedProfile = JSON.parse(profile.content);
                 console.log(parsedProfile.picture)
                 if (parsedProfile.picture !== undefined){
-                    return parsedProfile.picture.toString();
+                    return <Avatar alt="Remy Sharp" src={parsedProfile.picture.toString()} />
                 }
             }
-        return "/static/images/avatar/1.jpg";
+        return 
     }
 
     useEffect(() => {
@@ -76,7 +80,7 @@ function Feed(props) {
                         <Box sx={{ width: '100%', maxWidth: 500, margin: "10px auto", textAlign: "center"}}>
                             <Card sx={{ maxWidth: 1000}}>
                                 <CardActionArea>
-                                <Avatar alt="Remy Sharp" src={getProfilePicture(event.pubkey)} />
+                                {getProfilePicture(event.pubkey)}
                                     <CardContent>
                                         <Typography color="text.secondary">
                                             {event.content}
