@@ -1,8 +1,9 @@
 import { Container } from '@mui/system';
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, TextField, Box } from '@mui/material';
+import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon } from '@mui/material';
 import { setRelays } from '../redux/nostr';
+import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 
 
 export default function Relays() {
@@ -23,7 +24,24 @@ export default function Relays() {
     return (
         <Container sx={{ width: "100%", justifyContent: "center", alignItems: "center"}}>
             <Box sx={{ margin: '0 auto 16px', width: "100%", justifyContent: "center", alignItems: "center"}}>
-                {relays}
+            <Grid item xs={12} md={6}>
+                <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
+                    Relays
+                </Typography>
+
+                <List>
+                    {relays.map(relay => {
+                        return (
+                        <ListItem  key={relay}>
+                            <ListItemIcon>
+                                <SettingsInputAntennaIcon />
+                            </ListItemIcon>
+                                {relay}
+                        </ListItem>
+                    )})}
+                </List>
+            </Grid>
+
             </Box>
             <Box >
                 <TextField
@@ -31,7 +49,7 @@ export default function Relays() {
                 label="New Relay"
                 defaultValue=""
                 onChange={(e) => handleRelayInputChange(e)}
-                helperText="wss://relay.damus.io"
+                helperText="wss://"
                 />
                 <Button color='secondary' onClick={AddRelay}>Add Relay</Button>
             </Box>
