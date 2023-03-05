@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon } from '@mui/material';
 import { setRelays } from '../redux/nostr';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import Divider from '@mui/material/Divider';
 
 
 export default function Relays() {
@@ -22,27 +24,35 @@ export default function Relays() {
     }
 
     return (
-        <Container sx={{ width: "100%", justifyContent: "center", alignItems: "center"}}>
-            <Box sx={{ margin: '0 auto 16px', width: "100%", justifyContent: "center", alignItems: "center"}}>
-            <Grid item xs={12} md={6}>
-                <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
-                    Relays
-                </Typography>
+        <Container sx={{ width: "50%", justifyContent: "center", alignItems: "center"}}>
+            <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
+                Relays
+            </Typography>
 
-                <List>
-                    {relays.map(relay => {
-                        return (
+            <List>
+                {relays.map(relay => {
+                    return (
                         <ListItem  key={relay}>
-                            <ListItemIcon>
-                                <SettingsInputAntennaIcon />
-                            </ListItemIcon>
-                                {relay}
+                            <Grid container>
+                                <Grid xs={6}>
+                                    <ListItemIcon>
+                                        <SettingsInputAntennaIcon />
+                                    </ListItemIcon>
+                                    <Typography >
+                                        {relay}
+                                    </Typography>
+                                </Grid>
+                                <Grid xs>
+                                    <Button>
+                                        <DeleteForeverIcon /> 
+                                    </Button>
+                                </Grid>
+                            </Grid>
                         </ListItem>
-                    )})}
-                </List>
-            </Grid>
+                    )
+                })}
+            </List>
 
-            </Box>
             <Box >
                 <TextField
                 id="addRelayInput"
