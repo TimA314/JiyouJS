@@ -1,11 +1,10 @@
 import { Container } from '@mui/system';
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon } from '@mui/material';
+import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon, Paper } from '@mui/material';
 import { setRelays } from '../redux/nostr';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import Divider from '@mui/material/Divider';
 
 
 export default function Relays() {
@@ -23,6 +22,11 @@ export default function Relays() {
         dispatch(setRelays(relayInput))
     }
 
+    const DeleteRalay = (relay) => {
+        console.log("Deleting Relay: " + relay);
+    }
+
+
     return (
         <Container sx={{ width: "50%", justifyContent: "center", alignItems: "center"}}>
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
@@ -32,23 +36,27 @@ export default function Relays() {
             <List>
                 {relays.map(relay => {
                     return (
-                        <ListItem  key={relay}>
-                            <Grid container>
-                                <Grid xs={6}>
-                                    <ListItemIcon>
-                                        <SettingsInputAntennaIcon />
-                                    </ListItemIcon>
-                                    <Typography >
-                                        {relay}
-                                    </Typography>
+                        <Paper sx={{margin: "10px"}}>
+                            <ListItem  key={relay}>
+                                <Grid container>
+                                    <Grid xs={1}>
+                                            <ListItemIcon>
+                                                <SettingsInputAntennaIcon />
+                                            </ListItemIcon>
+                                    </Grid>
+                                    <Grid xs={10}>
+                                        <Typography >
+                                            {relay}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid xs={1}>
+                                        <Button onClick={() => DeleteRalay(relay)}>
+                                            <DeleteForeverIcon /> 
+                                        </Button>
+                                    </Grid>
                                 </Grid>
-                                <Grid xs>
-                                    <Button>
-                                        <DeleteForeverIcon /> 
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
+                            </ListItem>
+                        </Paper>
                     )
                 })}
             </List>
