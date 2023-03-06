@@ -27,9 +27,13 @@ export const nostrSlice = createSlice({
   name: 'nostr',
   initialState: nostrInitial,
   reducers: {
-    setRelays: (state, action) => {
-        console.log(`setRelays: ${action.payload}`)
+    addRelay: (state, action) => {
+        console.log(`addRelays: ${action.payload}`)
         state.relayList = [...state.relayList, action.payload];
+    },
+    removeRelay: (state, action) => {
+      console.log(`removeRelay: ${action}`);
+      state.relayList = state.relayList.filter((r) => r !== action.payload);
     },
     setPrivateKey: (state, action) => {
       console.log(`setPrivateKey: ${action.payload}`);
@@ -43,6 +47,6 @@ export const nostrSlice = createSlice({
   },
 })
 
-export const { setRelays, setPrivateKey, setEvents } = nostrSlice.actions
+export const { addRelay, setPrivateKey, setEvents, removeRelay } = nostrSlice.actions
 
 export default nostrSlice.reducer
