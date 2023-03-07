@@ -11,7 +11,7 @@ import toastr from 'toastr';
 export default function Relays() {
     const [relayInput, setRelayInput] = useState("");
     const dispatch = useDispatch();
-    const relays = useSelector(state => state.nostr.relayList);
+    const relayList = useSelector(state => state.nostr.relayList);
 
     const handleRelayInputChange = (e) => {
         e.preventDefault();
@@ -20,7 +20,7 @@ export default function Relays() {
 
     const handleAddRelay = () => {
         console.log(relayInput)
-        if (relays.includes(relayInput)){
+        if (relayList.includes(relayInput)){
             toastr.error("Relay already exists.");
             return;
         }
@@ -30,7 +30,7 @@ export default function Relays() {
 
     const DeleteRelay = (relay) => {
         console.log("Deleting Relay: " + relay);
-        if (relays.length === 1){
+        if (relayList.length === 1){
             toastr.error("Keep at least one relay");
             return;
         }
@@ -46,7 +46,7 @@ export default function Relays() {
             </Typography>
 
             <List>
-                {relays.map(relay => {
+                {relayList.map(relay => {
                     return (
                         <Paper key={relay} sx={{margin: "10px"}}>
                             <ListItem >
