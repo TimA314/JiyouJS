@@ -1,20 +1,18 @@
 import { Container } from '@mui/system';
-import React, { useContext, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon, Paper, Alert } from '@mui/material';
-import { addRelay, removeRelay } from '../redux/nostr';
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon, Paper } from '@mui/material';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import toastr from 'toastr';
-import { nip05 } from 'nostr-tools';
-import { NostrContext } from '../Nostr/NostrContext';
+import { SimplePool } from 'nostr-tools';
+import { NostrContext } from '../context/NostrContext';
 
-
-export default function Relays(props) {
+export default function Relays() {
+    const pool = useRef(new SimplePool())
     const [relayInput, setRelayInput] = useState("");
-    const relayList = props.relays;
     const privateKey = useContext(NostrContext).privateKey;
     const publicKey = useContext(NostrContext).publicKey;
+    const relayList =  useContext(NostrContext).relays;;
 
     
     // let profile = await nip05.queryProfile('')
@@ -30,8 +28,8 @@ export default function Relays(props) {
             toastr.error("Relay already exists.");
             return;
         }
-        props.setRelays([...props.relays, relayInput]);
-        toastr.success("Relay Added.")
+        // props.setRelays([...props.relays, relayInput]);
+        // toastr.success("Relay Added.")
     }
 
     const DeleteRelay = (relay) => {
@@ -41,10 +39,19 @@ export default function Relays(props) {
             return;
         }
         let deletedRelayList = relayList.filter((r) => r !== relay);
-        props.setRelays([deletedRelayList]);
+        // props.setRelays([deletedRelayList]);
         toastr.success("Relay Removed.")
     }
 
+    useEffect(() => {
+        const getEvents = async () => {
+            let events = await pool.current.list(relayList, [{authors: [publicKey], kinds: [0]}])
+            console.log(events)
+        }
+        getEvents();
+    
+    }, [])
+    
 
     return (
         <Container sx={{ width: "50%", justifyContent: "center", alignItems: "center"}}>

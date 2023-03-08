@@ -1,10 +1,10 @@
-import {React, useState } from 'react';
+import {React, useContext, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import toastr from 'toastr';
-import './SignIn.css';
 import {
     Box,
     Button,
+    Container,
     FormControl,
     Input,
     InputAdornment,
@@ -12,14 +12,13 @@ import {
     Typography,
   } from "@mui/material";
   import KeyIcon from '@mui/icons-material/Key';
-import { setPrivateKey } from '../redux/nostr';
-import { useDispatch} from 'react-redux';
 import { generatePrivateKey } from 'nostr-tools';
+import { NostrContext } from '../context/NostrContext';
 
 
 function SignIn(props) {
+    const nostrContext = useContext(NostrContext);
     const [pkInput, setPkInput] = useState("");
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
@@ -31,8 +30,8 @@ function SignIn(props) {
         event.preventDefault();
         try{
             console.log(`Setting Private Key: ${pkInput}`)
-            dispatch(setPrivateKey(pkInput));
-            navigate("/follows", {replace: true});
+            nostrContext.privateKey = pkInput;
+            navigate("/feed", {replace: true});
         } catch {
             toastr.error(`Not a Valid Key`);
         }
@@ -44,12 +43,12 @@ function SignIn(props) {
 
 
     return (
-        <Box
+        <Container
         component="form"
         noValidate
         autoComplete="off"
         sx={{
-            '& .MuiTextField-root': { m: 1, width: '25ch' },
+            '& .MuiTextField-root': { m: 1, width: '100%' },
         }}>
             <FormControl variant="standard">
                 <Box>
@@ -93,7 +92,7 @@ function SignIn(props) {
                     <Typography>New User? Generate Private Key</Typography>
                 </Button>
             </FormControl>
-        </Box>
+        </Container>
     )
 }
 

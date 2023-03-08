@@ -1,27 +1,26 @@
-import {React, useEffect, useRef, useState } from 'react';
-import Note from '../components/Note';
-import { setEvents, setProfiles } from '../redux/nostr';
-import { useDispatch, useSelector } from 'react-redux';
+import {React, useContext, useEffect, useRef, useState } from 'react';
 import toastr from 'toastr';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import { Box, CardActionArea, Button, Paper, SvgIcon } from '@mui/material';
+import { Box, CardActionArea} from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import { getEventHash, SimplePool } from 'nostr-tools';
+import { SimplePool } from 'nostr-tools';
 import { Container } from '@mui/system';
 import AvatarBot1 from '../assets/AvatarBot1'
+import { NostrContext } from '../context/NostrContext';
 
 
 
 
-function Feed(props) {
+function Feed() {
     const [events, setEvents] = useState([])
     const [profiles, setProfiles] = useState([])
-
-    let relays = props.relays;
-    console.log("relays: " + relays)
+    const pk = useContext(NostrContext).privateKey;
+    const relays = useContext(NostrContext).relays;
     const pool = useRef(new SimplePool())
+
+    console.log("relays: " + relays)
     
     
     const loadEvents = async () => {
