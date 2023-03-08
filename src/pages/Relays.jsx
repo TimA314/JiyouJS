@@ -1,18 +1,24 @@
 import { Container } from '@mui/system';
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon, Paper, Alert } from '@mui/material';
 import { addRelay, removeRelay } from '../redux/nostr';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import toastr from 'toastr';
+import { nip05 } from 'nostr-tools';
+import { NostrContext } from '../Nostr/NostrContext';
 
 
-export default function Relays() {
+export default function Relays(props) {
     const [relayInput, setRelayInput] = useState("");
-    const dispatch = useDispatch();
-    const relayList = useSelector(state => state.nostr.relayList);
+    const relayList = props.relays;
+    const privateKey = useContext(NostrContext).privateKey;
+    const publicKey = useContext(NostrContext).publicKey;
 
+    
+    // let profile = await nip05.queryProfile('')
+    console.log(privateKey);
     const handleRelayInputChange = (e) => {
         e.preventDefault();
         setRelayInput(e.target.value)
@@ -24,7 +30,7 @@ export default function Relays() {
             toastr.error("Relay already exists.");
             return;
         }
-        dispatch(addRelay(relayInput));
+        props.setRelays([...props.relays, relayInput]);
         toastr.success("Relay Added.")
     }
 
@@ -34,7 +40,8 @@ export default function Relays() {
             toastr.error("Keep at least one relay");
             return;
         }
-        dispatch(removeRelay(relay));
+        let deletedRelayList = relayList.filter((r) => r !== relay);
+        props.setRelays([deletedRelayList]);
         toastr.success("Relay Removed.")
     }
 
