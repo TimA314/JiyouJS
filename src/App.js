@@ -13,6 +13,11 @@ import SignIn from './pages/SignIn';
 import Relays from './pages/Relays';
 
 export default function App() {
+  const [relays, setRelays] = React.useState([
+    "wss://eden.nostr.land",
+    "wss://relay.snort.social",
+    "wss://relay.nostr.info"
+  ]);
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(
@@ -40,11 +45,11 @@ export default function App() {
           }}>
             <LabelBottomNavigation />
             <Routes>
-              <Route path="/" element={<Feed />} />
-              <Route path="/new-event" element={<NewEventForm />} />
-              <Route path="/profile" element={<SignIn />} />
-              <Route path="/follows" element={<Feed />} />
-              <Route path="/relays" element={<Relays />} />
+              <Route path="/" element={<Feed relays={relays}/>} />
+              <Route path="/new-event" element={<NewEventForm relays={relays}/>} />
+              <Route path="/profile" element={<SignIn relays={relays} />} />
+              <Route path="/follows" element={<Feed relays={relays} />} />
+              <Route path="/relays" element={<Relays relays={relays} setRelays={setRelays} />} />
               <Route path="/signin" element={<SignIn />} />
             </Routes>
         </Container>
