@@ -9,6 +9,8 @@ import { SimplePool } from 'nostr-tools';
 import { Container } from '@mui/system';
 import { NostrContext } from '../context/NostrContext';
 import { useNavigate } from 'react-router';
+import { bech32ToHex, splitByUrl } from '../util';
+import { Image } from '@mui/icons-material';
 
 
 
@@ -17,12 +19,12 @@ function Feed() {
     const [events, setEvents] = useState([])
     const [profiles, setProfiles] = useState([])
 
-    const pk = useContext(NostrContext).privateKey;
+    const privateKey = useContext(NostrContext).privateKey;
+    const publicKey = useContext(NostrContext).publicKey;
     const relays = useContext(NostrContext).relays;
     const navigate = useNavigate();
-    const pool = useRef(new SimplePool())
     
-    console.log("Private Key: " + pk);
+    console.log("Private Key: " + privateKey);
     console.log("relays: " + relays) 
     
     
@@ -30,47 +32,61 @@ function Feed() {
         //         return pool.current.list(relays, [{authors: {pubkey}, kinds: [0]}])
         // }
         
-    useEffect(() => {
-        if (pk === "") navigate("/signin", {replace: true});
-        const loadEvents = async () => {
-            try{
-    
-                let globalEvents = await pool.current.list(relays, [{kinds: [1]}]);         
-                
-                
-                let newEvents = globalEvents.filter((event) => event.kind === 1);
+        useEffect(() => {
+            if (privateKey === "") navigate("/signin", {replace: true});
+            const pool = new SimplePool();
+            const loadEvents = async () => {
+                try{
+                    let sub = pool.sub(
+                        relays,
+                        [
+                          {
+                            kinds: [0,1]
+                            // authors: [
+                            //     bech32ToHex("npub1hy8j6fcmyv3cefgalg70c6hwmzda7kqzwrykc58eurvu5rfhn4lspdpcv7")
+                            // ]
+                          }
+                        ]
+                      )
 
-                if (newEvents && newEvents.length >= 1){
-                    console.log("events: " + newEvents);
-                    setEvents(newEvents)
+                      sub.on('event', event => {
+                        // this will only be called once the first time the event is received
+                    
+                        
+                        setEvents([...events, event])
+                      })
+                    // let globalEvents = await pool.list(relays, [{kinds: [0,1],  authors: []}]);         
+                    // let parsedEvents = JSON.parse(globalEvents);
+                    // let prof = parsedEvents.find((event => event.kind === 0));
+                    // console.log(prof)
+                    // let newEvents = globalEvents;
+
+                    // if (newEvents && newEvents.length >= 1){
+                    //     console.log("events: " + JSON.stringify(newEvents));
+                    //     setEvents(newEvents)
+                    // }
+                
+                    
+                } catch (error) {
+                    console.error("event error: " + error)
                 }
-            
-                
-            } catch (error) {
-                console.log("event error: " + error)
             }
-        }
 
-        loadEvents()
-    }, [])
+            loadEvents();
+        }, [])
     
-
-    return (
-        <Container width="100%">
-            <Container >
-                <Box >
-                </Box>
-            </Container>
-            { events.map(async (event) => {
+        const Notes = (kind1Events) => {
+            Object.entries(kind1Events).map(async (key, value) => {
+                console.log("eventmapp" + value);
                 return (
-                    <Box key={event.sig}>
+                    <Box key={value.sig}>
                         <Box sx={{ width: '100%', maxWidth: 500, margin: "10px auto", textAlign: "center"}}>
                             <Card sx={{ maxWidth: 1000}}>
                                 <CardActionArea>
                                     <Avatar alt="profile" src={"https://nostr.build/i/nostr.build_885215404c2420a9d672919276ebe00247fe58db4307f6239ed71c66121683bd.png"}></Avatar>
                                     <CardContent>
                                         <Typography color="text.secondary">
-                                            {event.content}
+                                            {value.content}
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
@@ -78,9 +94,39 @@ function Feed() {
                         </Box>
                     </Box>
                 )
+            })
+        }
+
+    return (
+        <Box width="100%">
+            {events.map((event) => {
+                console.log(event)
+                if(event.kind === 1) {
+                    return (
+                        <Box key={event.sig + Math.random()} sx={{margin: "5px", padding: "5px"}}>
+                            <Card>
+                                <CardContent>
+                                    <CardActionArea>
+                                        <Typography>
+                                            {event.content}
+                                        </Typography>
+                                        <Image src={splitByUrl(event.content)[0]} />
+                                    </CardActionArea>
+                                </CardContent>
+                            </Card>
+                        </Box>
+                    )
+                }
+
+                if (event.kind === 0) {
+                    return (
+                        <Box key={event.sig + Math.random()}>
+                            {JSON.parse(event.content).name}
+                        </Box>
+                    )
+                }
             })}
-                
-        </Container>
+        </Box>
     )
 }
 export default Feed
