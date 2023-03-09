@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 
 
-export default function LabelBottomNavigation() {
+export default function NavBar() {
   const [value, setValue] = React.useState(0);
   const ref = React.useRef(null);
 

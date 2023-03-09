@@ -4,7 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Container } from '@mui/system';
 
 import Feed from './pages/Feed';
-import LabelBottomNavigation from './components/NavBar';
+import NavBar from './components/NavBar';
 import { Route, Routes } from 'react-router';
 import NewEventForm from './components/NewEventForm';
 import SignIn from './pages/SignIn';
@@ -36,7 +36,7 @@ export default function App() {
               color: 'text.primary',
               p: 3,
             }}>
-              <LabelBottomNavigation/>
+              <NavBar position="static"/>
               <Routes>
                 <Route path="/" element={<Feed />} />
                 <Route path="/new-event" element={<NewEventForm />} />
