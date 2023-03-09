@@ -32,7 +32,7 @@ export default function Note(props) {
   const [expanded, setExpanded] = React.useState(false);
   const event = props.event;
   let image = new Image();
-  image.src = splitByUrl(props.event.content)[0];
+  image.src = splitByUrl(event.content)[0];
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -51,7 +51,7 @@ export default function Note(props) {
           </IconButton>
         }
         title="Example Name Here"
-        subheader={props.event.pubkey}
+        subheader={event.pubkey}
       />
       {image.complete && (
         <CardMedia
@@ -63,7 +63,7 @@ export default function Note(props) {
       }
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-        {props.event.content}
+        {event.content}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -86,16 +86,16 @@ export default function Note(props) {
         <CardContent sx={{}}>
           <Typography paragraph display="h6">MetaData:</Typography>
           <Typography variant="caption" display="block">
-            Event Id: {props.event.id}
+            Event Id: {event.id}
           </Typography>
           <Typography variant="caption" display="block" gutterBottom>
-            Created: {moment.unix(props.event.created_at).format("LLLL")}
+            Created: {moment.unix(event.created_at).format("LLLL")}
           </Typography>
           <Typography variant="caption" display="block" gutterBottom>
-            UnixTime: {props.event.created_at}
+            UnixTime: {event.created_at}
           </Typography>
           <Typography variant="caption" display="block" gutterBottom>
-            Sig: {props.event.sig}
+            Sig: {event.sig}
           </Typography>
         </CardContent>
       </Collapse>
