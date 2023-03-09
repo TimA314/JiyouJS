@@ -50,14 +50,6 @@ export default function Relays() {
         getEvents();
     }, [])
     
-    
-    useEffect(() => {
-        console.log("getting prof")
-        pool.current.list(relayList, [{authors: {publicKey}, kinds: [0]}])
-            .then((prof) => console.log("Prof: " + prof))
-            .catch((error) => console.error(error))
-    }, [])
-    
 
     return (
         <Container sx={{ width: "50%", justifyContent: "center", alignItems: "center"}}>
