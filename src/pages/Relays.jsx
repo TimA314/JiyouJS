@@ -6,24 +6,23 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import toastr from 'toastr';
 import { SimplePool } from 'nostr-tools';
 import { NostrContext } from '../context/NostrContext';
+import { useNavigate } from 'react-router';
 
 export default function Relays() {
-    const pool = useRef(new SimplePool())
     const [relayInput, setRelayInput] = useState("");
-    const privateKey = useContext(NostrContext).privateKey;
+    const pk = useContext(NostrContext).privateKey;
     const publicKey = useContext(NostrContext).publicKey;
-    const relayList =  useContext(NostrContext).relays;;
-
-    
+    const relayList =  useContext(NostrContext).relays;
+    const navigate = useNavigate();
+    const pool = useRef(new SimplePool())
     // let profile = await nip05.queryProfile('')
-    console.log(privateKey);
+    console.log(pk);
     const handleRelayInputChange = (e) => {
         e.preventDefault();
         setRelayInput(e.target.value)
     }
-
+    
     const handleAddRelay = () => {
-        console.log(relayInput)
         if (relayList.includes(relayInput)){
             toastr.error("Relay already exists.");
             return;
@@ -39,17 +38,24 @@ export default function Relays() {
             return;
         }
         let deletedRelayList = relayList.filter((r) => r !== relay);
-        // props.setRelays([deletedRelayList]);
         toastr.success("Relay Removed.")
     }
-
+    
     useEffect(() => {
+        if (pk === "") navigate("/signin", {replace: true});
         const getEvents = async () => {
-            let events = await pool.current.list(relayList, [{authors: [publicKey], kinds: [0]}])
+            let events = await pool.current.list(relayList, [{authors: publicKey, kinds: [0]}])
             console.log(events)
         }
         getEvents();
+    }, [])
     
+    
+    useEffect(() => {
+        console.log("getting prof")
+        pool.current.list(relayList, [{authors: {publicKey}, kinds: [0]}])
+            .then((prof) => console.log("Prof: " + prof))
+            .catch((error) => console.error(error))
     }, [])
     
 

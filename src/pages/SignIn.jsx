@@ -14,6 +14,9 @@ import {
   import KeyIcon from '@mui/icons-material/Key';
 import { generatePrivateKey } from 'nostr-tools';
 import { NostrContext } from '../context/NostrContext';
+import { bech32ToHex } from '../util';
+import * as secp from "@noble/secp256k1";
+
 
 
 function SignIn(props) {
@@ -30,10 +33,27 @@ function SignIn(props) {
         event.preventDefault();
         try{
             console.log(`Setting Private Key: ${pkInput}`)
-            nostrContext.privateKey = pkInput;
-            navigate("/feed", {replace: true});
+            
+            if(secp.utils.isValidPrivateKey(pkInput)){
+                nostrContext.privateKey = pkInput;
+                console.log("Logged In");
+                navigate("/feed", {replace: true});
+                return
+            }
+            
+            const hexKey = bech32ToHex(pkInput);
+            
+            if (secp.utils.isValidPrivateKey(hexKey)) {
+                nostrContext.privateKey = hexKey;
+                navigate("/feed", {replace: true});
+                return
+            }
+            
+            console.log("Invalid Key");
+            toastr.error("Not a valid private Key")
+            return;
         } catch {
-            toastr.error(`Not a Valid Key`);
+            toastr.error(`There was an error validating the private key.`);
         }
     };
 
@@ -49,6 +69,9 @@ function SignIn(props) {
         autoComplete="off"
         sx={{
             '& .MuiTextField-root': { m: 1, width: '100%' },
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
         }}>
             <FormControl variant="standard">
                 <Box>
