@@ -15,6 +15,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import moment from 'moment/moment';
+import { splitByUrl } from '../util';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -29,7 +30,9 @@ const ExpandMore = styled((props) => {
 
 export default function Note(props) {
   const [expanded, setExpanded] = React.useState(false);
-
+  const event = props.event;
+  let image = new Image();
+  image.src = splitByUrl(props.event.content)[0];
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -39,7 +42,7 @@ export default function Note(props) {
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
+            ?
           </Avatar>
         }
         action={
@@ -50,12 +53,14 @@ export default function Note(props) {
         title="Example Name Here"
         subheader={props.event.pubkey}
       />
-      <CardMedia
-        component="img"
-        height="194"
-        image="/static/images/cards/paella.jpg"
-        alt="Paella dish"
-      />
+      {image.complete && (
+        <CardMedia
+          component="img"
+          height="194"
+          image={image.src}
+          alt="picture"
+        />)
+      }
       <CardContent>
         <Typography variant="body2" color="text.secondary">
         {props.event.content}
@@ -78,18 +83,18 @@ export default function Note(props) {
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>MetaData:</Typography>
-          <Typography paragraph>
+        <CardContent sx={{}}>
+          <Typography paragraph display="h6">MetaData:</Typography>
+          <Typography variant="caption" display="block">
             Event Id: {props.event.id}
           </Typography>
-          <Typography paragraph>
+          <Typography variant="caption" display="block" gutterBottom>
             Created: {moment.unix(props.event.created_at).format("LLLL")}
           </Typography>
-          <Typography paragraph>
+          <Typography variant="caption" display="block" gutterBottom>
             UnixTime: {props.event.created_at}
           </Typography>
-          <Typography>
+          <Typography variant="caption" display="block" gutterBottom>
             Sig: {props.event.sig}
           </Typography>
         </CardContent>
