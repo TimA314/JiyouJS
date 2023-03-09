@@ -11,6 +11,7 @@ import { NostrContext } from '../context/NostrContext';
 import { useNavigate } from 'react-router';
 import { bech32ToHex, splitByUrl } from '../util';
 import { Image } from '@mui/icons-material';
+import Note from '../components/Note';
 
 
 
@@ -103,18 +104,7 @@ function Feed() {
                 console.log(event)
                 if(event.kind === 1) {
                     return (
-                        <Box key={event.sig + Math.random()} sx={{margin: "5px", padding: "5px"}}>
-                            <Card>
-                                <CardContent>
-                                    <CardActionArea>
-                                        <Typography>
-                                            {event.content}
-                                        </Typography>
-                                        <Image src={splitByUrl(event.content)[0]} />
-                                    </CardActionArea>
-                                </CardContent>
-                            </Card>
-                        </Box>
+                        <Note event={event} />
                     )
                 }
 
