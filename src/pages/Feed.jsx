@@ -18,8 +18,6 @@ import Note from '../components/Note';
 
 function Feed() {
     const [events, setEvents] = useState([])
-    const [profiles, setProfiles] = useState([])
-
     const privateKey = useContext(NostrContext).privateKey;
     const publicKey = useContext(NostrContext).publicKey;
     const relays = useContext(NostrContext).relays;
@@ -28,11 +26,6 @@ function Feed() {
     console.log("Private Key: " + privateKey);
     console.log("relays: " + relays) 
     
-    
-    // const getProfile = (pubkey) => {
-        //         return pool.current.list(relays, [{authors: {pubkey}, kinds: [0]}])
-        // }
-        
         useEffect(() => {
             if (privateKey === "") navigate("/signin", {replace: true});
             const pool = new SimplePool();
@@ -42,7 +35,7 @@ function Feed() {
                         relays,
                         [
                           {
-                            kinds: [0,1]
+                            kinds: [1]
                             // authors: [
                             //     bech32ToHex("npub1hy8j6fcmyv3cefgalg70c6hwmzda7kqzwrykc58eurvu5rfhn4lspdpcv7")
                             // ]
@@ -51,22 +44,9 @@ function Feed() {
                       )
 
                       sub.on('event', event => {
-                        // this will only be called once the first time the event is received
-                    
-                        
+                        // this will only be called once the first time the event is received      
                         setEvents([...events, event])
                       })
-                    // let globalEvents = await pool.list(relays, [{kinds: [0,1],  authors: []}]);         
-                    // let parsedEvents = JSON.parse(globalEvents);
-                    // let prof = parsedEvents.find((event => event.kind === 0));
-                    // console.log(prof)
-                    // let newEvents = globalEvents;
-
-                    // if (newEvents && newEvents.length >= 1){
-                    //     console.log("events: " + JSON.stringify(newEvents));
-                    //     setEvents(newEvents)
-                    // }
-                
                     
                 } catch (error) {
                     console.error("event error: " + error)
@@ -75,46 +55,13 @@ function Feed() {
 
             loadEvents();
         }, [])
-    
-        const Notes = (kind1Events) => {
-            Object.entries(kind1Events).map(async (key, value) => {
-                console.log("eventmapp" + value);
-                return (
-                    <Box key={value.sig}>
-                        <Box sx={{ width: '100%', maxWidth: 500, margin: "10px auto", textAlign: "center"}}>
-                            <Card sx={{ maxWidth: 1000}}>
-                                <CardActionArea>
-                                    <Avatar alt="profile" src={"https://nostr.build/i/nostr.build_885215404c2420a9d672919276ebe00247fe58db4307f6239ed71c66121683bd.png"}></Avatar>
-                                    <CardContent>
-                                        <Typography color="text.secondary">
-                                            {value.content}
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Box>
-                    </Box>
-                )
-            })
-        }
 
     return (
         <Box width="100%">
             {events.map((event) => {
-                console.log(event)
-                if(event.kind === 1) {
-                    return (
-                        <Note event={event} />
-                    )
-                }
-
-                if (event.kind === 0) {
-                    return (
-                        <Box key={event.sig + Math.random()}>
-                            {JSON.parse(event.content).name}
-                        </Box>
-                    )
-                }
+                return (
+                    <Note event={event} />
+                )
             })}
         </Box>
     )
