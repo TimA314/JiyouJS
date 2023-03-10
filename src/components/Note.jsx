@@ -37,6 +37,7 @@ export default function Note(props) {
     setExpanded(!expanded);
   };
 
+  console.log("loading note")
   return (
     <Card sx={{ maxWidth: "100%", margin: "10px", alignItems: "flex-start"}}>
       <CardHeader
