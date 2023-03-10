@@ -9,6 +9,7 @@ import { Route, Routes } from 'react-router';
 import NewEventForm from './components/NewEventForm';
 import SignIn from './pages/SignIn';
 import Relays from './pages/Relays';
+import { CssBaseline } from '@mui/material';
 
 export default function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -27,6 +28,7 @@ export default function App() {
 
   return (
       <ThemeProvider theme={theme}>
+        <CssBaseline />
           <Container
             sx={{
               width: '100%',

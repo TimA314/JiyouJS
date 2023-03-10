@@ -1,4 +1,4 @@
-import {React, useContext, useState } from 'react';
+import {React, useContext, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import toastr from 'toastr';
 import {
@@ -12,7 +12,7 @@ import {
     Typography,
   } from "@mui/material";
   import KeyIcon from '@mui/icons-material/Key';
-import { generatePrivateKey } from 'nostr-tools';
+import { generatePrivateKey, getPublicKey } from 'nostr-tools';
 import { NostrContext } from '../context/NostrContext';
 import { bech32ToHex } from '../util';
 import * as secp from "@noble/secp256k1";
@@ -23,6 +23,15 @@ function SignIn(props) {
     const nostrContext = useContext(NostrContext);
     const [pkInput, setPkInput] = useState("");
     const navigate = useNavigate();
+    const sessionPk = window.sessionStorage.getItem("pk");
+    console.log("session pk: " + sessionPk);
+
+    useEffect(() => {
+        if (secp.utils.isValidPrivateKey(sessionPk)){
+            nostrContext.privateKey = sessionPk;
+            navigate("/feed");
+        }
+    }, [])
 
     const handleInputChange = (e) => {
         e.preventDefault();
@@ -36,6 +45,8 @@ function SignIn(props) {
             
             if(secp.utils.isValidPrivateKey(pkInput)){
                 nostrContext.privateKey = pkInput;
+                window.sessionStorage.setItem("privateKey", pkInput);
+                window.sessionStorage.setItem("publicKey", getPublicKey(pkInput));
                 console.log("Logged In");
                 navigate("/feed", {replace: true});
                 return
@@ -44,7 +55,8 @@ function SignIn(props) {
             const hexKey = bech32ToHex(pkInput);
             
             if (secp.utils.isValidPrivateKey(hexKey)) {
-                nostrContext.privateKey = hexKey;
+                window.sessionStorage.setItem("privateKey", hexKey);
+                window.sessionStorage.setItem("publicKey", getPublicKey(hexKey));
                 navigate("/feed", {replace: true});
                 return
             }

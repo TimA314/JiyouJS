@@ -10,13 +10,16 @@ import { useNavigate } from 'react-router';
 
 export default function Relays() {
     const [relayInput, setRelayInput] = useState("");
-    const pk = useContext(NostrContext).privateKey;
+    const privateKey = useContext(NostrContext).privateKey;
     const publicKey = useContext(NostrContext).publicKey;
     const relayList =  useContext(NostrContext).relays;
     const navigate = useNavigate();
     const pool = useRef(new SimplePool())
-    // let profile = await nip05.queryProfile('')
-    console.log(pk);
+
+    useEffect(() => {
+        if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
+    })
+
     const handleRelayInputChange = (e) => {
         e.preventDefault();
         setRelayInput(e.target.value)
@@ -32,22 +35,22 @@ export default function Relays() {
     }
 
     const DeleteRelay = (relay) => {
-        console.log("Deleting Relay: " + relay);
-        if (relayList.length === 1){
-            toastr.error("Keep at least one relay");
-            return;
-        }
-        let deletedRelayList = relayList.filter((r) => r !== relay);
-        toastr.success("Relay Removed.")
+        // console.log("Deleting Relay: " + relay);
+        // if (relayList.length === 1){
+        //     toastr.error("Keep at least one relay");
+        //     return;
+        // }
+        // let deletedRelayList = relayList.filter((r) => r !== relay);
+        // toastr.success("Relay Removed.")
     }
     
     useEffect(() => {
-        if (pk === "") navigate("/signin", {replace: true});
-        const getEvents = async () => {
-            let events = await pool.current.list(relayList, [{authors: publicKey, kinds: [0]}])
-            console.log(events)
-        }
-        getEvents();
+        // if (pk === "") navigate("/signin", {replace: true});
+        // const getEvents = async () => {
+        //     let events = await pool.current.list(relayList, [{authors: publicKey, kinds: [0]}])
+        //     console.log(events)
+        // }
+        // getEvents();
     }, [])
     
 

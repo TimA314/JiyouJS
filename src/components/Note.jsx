@@ -38,7 +38,7 @@ export default function Note(props) {
   };
 
   return (
-    <Card sx={{ maxWidth: 345, margin: "10px" }}>
+    <Card sx={{ maxWidth: "100%", margin: "10px", alignItems: "flex-start"}}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
