@@ -1,5 +1,5 @@
 import {React, useContext, useEffect, useState } from 'react';
-import { SimplePool } from 'nostr-tools';
+import { getPublicKey, SimplePool } from 'nostr-tools';
 import { NostrContext } from '../context/NostrContext';
 import { useNavigate } from 'react-router';
 import Note from '../components/Note';
@@ -18,13 +18,18 @@ function Feed() {
 
         const loadEvents = async () => {
             try{
+                const userProfile = followersPubKeys(getPublicKey(privateKey));
+                if (userProfile){
+                    userProfile.
+                }
                 let timeSince = new Date();
                 timeSince.setDate(timeSince.getDate()-5)
-                let sub = pool.sub(relays, [{ kinds: [1], limit: 100}])
+
+                let sub = pool.sub(relays, [{ kinds: [1], limit: 100, authors: followerArray }])
                 
                 sub.on('event', async event => {
                     if (event && !events.some((e) => e.sig === event.sig)){
-                        event.profile = await addProfileToEvent(event.pubkey)
+                        event.profile = await getProfile(event.pubkey)
                         setEvents((prevEvents) => {
                             let newEvents = sortEvents([...prevEvents, event])
                             console.log(newEvents);
@@ -49,8 +54,8 @@ function Feed() {
             return sortedEvents;
         }
 
-        const addProfileToEvent = async (eventPubkey) => {
-            let prof = await pool.list(relays, [{kinds: [0], authors: [eventPubkey], limit: 1 }])
+        const getProfile = async (pubkeyForProfile) => {
+            let prof = await pool.list(relays, [{kinds: [0], authors: [pubkeyForProfile], limit: 1 }])
 
             if(prof){
                 return prof;

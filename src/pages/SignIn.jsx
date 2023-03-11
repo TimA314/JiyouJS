@@ -12,10 +12,10 @@ import {
     Typography,
   } from "@mui/material";
   import KeyIcon from '@mui/icons-material/Key';
-import { generatePrivateKey, getPublicKey } from 'nostr-tools';
+import { generatePrivateKey, getPublicKey, SimplePool } from 'nostr-tools';
 import { NostrContext } from '../context/NostrContext';
 import { bech32ToHex } from '../util';
-import * as secp from "@noble/secp256k1";
+import { setUserFollowers, isValidKey, loadProfile } from '../NostrFunctions';
 
 
 
@@ -24,11 +24,19 @@ function SignIn(props) {
     const [pkInput, setPkInput] = useState("");
     const navigate = useNavigate();
     const sessionPk = window.sessionStorage.getItem("pk");
+    const relays = useContext(NostrContext).relays;
     console.log("session pk: " + sessionPk);
 
+ 
+
+
     useEffect(() => {
-        if (secp.utils.isValidPrivateKey(sessionPk)){
+        if (isValidKey(sessionPk)){
             nostrContext.privateKey = sessionPk;
+            nostrContext.userFollowers = setUserFollowers(getPublicKey(sessionPk))
+            window.sessionStorage.setItem("privateKey", sessionPk);
+            window.sessionStorage.setItem("publicKey", getPublicKey(sessionPk));
+            loadUser(getPublicKey(sessionPk));
             navigate("/feed");
         }
     }, [])
@@ -43,10 +51,12 @@ function SignIn(props) {
         try{
             console.log(`Setting Private Key: ${pkInput}`)
             
-            if(secp.utils.isValidPrivateKey(pkInput)){
+            if(isValidKey(pkInput)){
                 nostrContext.privateKey = pkInput;
                 window.sessionStorage.setItem("privateKey", pkInput);
                 window.sessionStorage.setItem("publicKey", getPublicKey(pkInput));
+                loadUser(getPublicKey(pkInput));
+
                 console.log("Logged In");
                 navigate("/feed", {replace: true});
                 return
@@ -54,9 +64,10 @@ function SignIn(props) {
             
             const hexKey = bech32ToHex(pkInput);
             
-            if (secp.utils.isValidPrivateKey(hexKey)) {
+            if (isValidKey(hexKey)) {
                 window.sessionStorage.setItem("privateKey", hexKey);
                 window.sessionStorage.setItem("publicKey", getPublicKey(hexKey));
+                loadUser(getPublicKey(hexKey));
                 navigate("/feed", {replace: true});
                 return
             }
@@ -69,10 +80,16 @@ function SignIn(props) {
         }
     };
 
+    const loadUser = async (pub) => {
+        let pool = new SimplePool();
+        const profile = loadProfile(pool, pub, relays);
+        nostrContext.profile = profile
+        pool.close();
+    }
+
     const handleNewUserClicked = (event) => {
         setPkInput(generatePrivateKey());
     }
-
 
     return (
         <Container
