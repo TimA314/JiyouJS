@@ -1,18 +1,16 @@
 import { Container } from '@mui/system';
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon, Paper } from '@mui/material';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import toastr from 'toastr';
 import { SimplePool } from 'nostr-tools';
-import { NostrContext } from '../context/NostrContext';
 import { useNavigate } from 'react-router';
 
-export default function Relays() {
+export default function Relays(props) {
     const [relayInput, setRelayInput] = useState("");
-    const privateKey = useContext(NostrContext).privateKey;
-    const publicKey = useContext(NostrContext).publicKey;
-    const relayList =  useContext(NostrContext).relays;
+    const privateKey = props.privateKey;
+    const relayList =  props.relays;
     const navigate = useNavigate();
     const pool = useRef(new SimplePool())
 

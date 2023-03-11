@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import Note from '../components/Note';
 
 
-function Feed() {
+function Feed(props) {
     const [events, setEvents] = useState([])
     const privateKey = useContext(NostrContext).privateKey;
     const relays = useContext(NostrContext).relays;
@@ -18,10 +18,10 @@ function Feed() {
 
         const loadEvents = async () => {
             try{
-                const userProfile = followersPubKeys(getPublicKey(privateKey));
-                if (userProfile){
-                    userProfile.
-                }
+                // const userProfile = followersPubKeys(getPublicKey(privateKey));
+                // if (userProfile){
+                //     // userProfile.
+                // }
                 let timeSince = new Date();
                 timeSince.setDate(timeSince.getDate()-5)
 

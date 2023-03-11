@@ -7,7 +7,6 @@ import CellTowerIcon from '@mui/icons-material/CellTower';
 import PublicIcon from '@mui/icons-material/Public';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 
 
 export default function NavBar() {

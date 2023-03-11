@@ -1,14 +1,13 @@
-import {React, useContext, useEffect, useState } from 'react';
+import {React, useEffect, useState } from 'react';
 import { SimplePool } from 'nostr-tools';
-import { NostrContext } from '../context/NostrContext';
 import { useNavigate } from 'react-router';
 import Note from '../components/Note';
 
 
-function Feed() {
+function Feed(props) {
     const [events, setEvents] = useState([])
-    const privateKey = useContext(NostrContext).privateKey;
-    const relays = useContext(NostrContext).relays;
+    const privateKey = props.privateKey;
+    const relays = props.relays;
     const navigate = useNavigate();
 
     

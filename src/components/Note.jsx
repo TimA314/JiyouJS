@@ -9,15 +9,13 @@ import Collapse from '@mui/material/Collapse';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
+import { purple } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import moment from 'moment/moment';
-import { bech32ToText, parseKey, splitByUrl } from '../util';
-import { SimplePool } from 'nostr-tools';
-import { NostrContext } from '../context/NostrContext';
+import { GetImageFromPost } from '../NostrFunctions';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -33,8 +31,8 @@ const ExpandMore = styled((props) => {
 export default function Note(props) {
   const [expanded, setExpanded] = React.useState(false);
   const event = props.event;
-  let image = new Image();
-  image.src = splitByUrl(event.content)[0];
+  const imageFromPost = GetImageFromPost(event.content);
+  console.log("img.src: " + imageFromPost);
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -44,7 +42,7 @@ export default function Note(props) {
   if (event.profile[0] && event.profile[0].content){
     profileContent = JSON.parse(event.profile[0].content);
     if (profileContent.picture) profilePicture = profileContent.picture;
-    console.log("profile picture: " + profileContent.picture);
+    console.log("profile content: " + JSON.stringify(profileContent));
   } 
 
 
@@ -52,7 +50,7 @@ export default function Note(props) {
     <Card sx={{ maxWidth: "100%", margin: "10px", alignItems: "flex-start"}}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe" src={profilePicture}>
+          <Avatar sx={{ bgcolor: purple[500] }} aria-label="recipe" src={profilePicture}>
           </Avatar>
         }
         action={
@@ -61,13 +59,13 @@ export default function Note(props) {
           </IconButton>
         }
         title={profileContent ? profileContent.display_name : "Unknown"}
-        subheader={event.pubkey}
+        subheader={profileContent.nip05 ? profileContent.nip05 : ""}
       />
-      {image.complete && (
+      {imageFromPost && (
         <CardMedia
           component="img"
           height="194"
-          image={image.src}
+          image={imageFromPost}
           alt="picture"
         />)
       }
