@@ -15,7 +15,9 @@ import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import moment from 'moment/moment';
-import { splitByUrl } from '../util';
+import { bech32ToText, parseKey, splitByUrl } from '../util';
+import { SimplePool } from 'nostr-tools';
+import { NostrContext } from '../context/NostrContext';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -37,13 +39,20 @@ export default function Note(props) {
     setExpanded(!expanded);
   };
 
-  console.log("loading note")
+  let profileContent = null;
+  let profilePicture = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973461_1280.png";
+  if (event.profile[0] && event.profile[0].content){
+    profileContent = JSON.parse(event.profile[0].content);
+    if (profileContent.picture) profilePicture = profileContent.picture;
+    console.log("profile picture: " + profileContent.picture);
+  } 
+
+
   return (
     <Card sx={{ maxWidth: "100%", margin: "10px", alignItems: "flex-start"}}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            ?
+          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe" src={profilePicture}>
           </Avatar>
         }
         action={
@@ -51,7 +60,7 @@ export default function Note(props) {
             <MoreVertIcon />
           </IconButton>
         }
-        title="Example Name Here"
+        title={profileContent ? profileContent.display_name : "Unknown"}
         subheader={event.pubkey}
       />
       {image.complete && (

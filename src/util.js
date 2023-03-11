@@ -18,12 +18,36 @@ export function bech32ToHex(str) {
 
 export function bech32ToText(str) {
     try {
-    const decoded = bech32.decode(str, 1000);
+    const decoded = bech32.decode(str);
     const buf = bech32.fromWords(decoded.words);
     return new TextDecoder().decode(Uint8Array.from(buf));
     } catch {
     return "";
     }
+}
+
+export function parseKey(key){
+    if (typeof key === "string") {
+        // Is the key encoded in bech32?
+        if (key.startsWith("npub1")) {
+          const { words } = bech32.decode(key)
+          const bytes = Uint8Array.from(bech32.fromWords(words))
+          return secp.utils.bytesToHex(bytes).toLowerCase()
+        }
+        // If not, it must be lowercase hex.
+        const valid = "0123456789abcdef"
+        if (key.length % 2 !== 0) {
+            return "";
+        }
+        for (const c of key) {
+          if (!valid.includes(c)) {
+            return "";
+          }
+        }
+        return key
+      } else {
+        return secp.utils.bytesToHex(key).toLowerCase()
+      }
 }
 
 export function getReactions(notes, id, kind) {

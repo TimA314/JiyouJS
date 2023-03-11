@@ -1,5 +1,4 @@
-import {React, useContext, useEffect, useRef, useState } from 'react';
-import { Box, Stack} from '@mui/material';
+import {React, useContext, useEffect, useState } from 'react';
 import { SimplePool } from 'nostr-tools';
 import { NostrContext } from '../context/NostrContext';
 import { useNavigate } from 'react-router';
@@ -7,9 +6,8 @@ import Note from '../components/Note';
 
 
 function Feed() {
-    const [events, setEvents] = useState(new Set())
+    const [events, setEvents] = useState([])
     const privateKey = useContext(NostrContext).privateKey;
-    const publicKey = useContext(NostrContext).publicKey;
     const relays = useContext(NostrContext).relays;
     const navigate = useNavigate();
 
@@ -20,24 +18,45 @@ function Feed() {
 
         const loadEvents = async () => {
             try{
-                let sub = pool.sub(relays, [{ kinds: [1] }])
-
-                sub.on('event', event => {
-                    if (event && !events.has(event)){
+                let timeSince = new Date();
+                timeSince.setDate(timeSince.getDate()-5)
+                let sub = pool.sub(relays, [{ kinds: [1], limit: 10}])
+                
+                sub.on('event', async event => {
+                    if (event && !events.some((e) => e.sig === event.sig)){
+                        event.profile = await addProfileToEvent(event.pubkey)
                         setEvents((prevEvents) => {
-                            console.log("setting Event")
-                            prevEvents.add(event);
-                            return prevEvents;
+                            let newEvents = sortEvents([...prevEvents, event])
+                            console.log(newEvents);
+                            return newEvents;
                         });
                     } 
                 })
 
-                return () => {
-                    pool.close();
-                }
             } catch (error) {
                 console.error("event error: " + error)
+            } finally {
+                if (pool){
+                    await pool.close();
+                }
             }
+        }
+
+        const sortEvents = (newEvents) => {
+            if (!newEvents) return newEvents;
+            
+            const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at).filter((event) => event.profile[0])
+            return sortedEvents;
+        }
+
+        const addProfileToEvent = async (eventPubkey) => {
+            let prof = await pool.list(relays, [{kinds: [0], authors: [eventPubkey], limit: 1 }])
+
+            if(prof){
+                return prof;
+            }
+
+            return null;
         }
 
         loadEvents();
@@ -45,12 +64,13 @@ function Feed() {
 
     return (
         <>
-            {Array.from(events).map(e => {
-                        return (
-                            <Note key={e.sig} event={e} />
-                        )
-                    })}
+            {events.map(e => {
+                return (
+                    <Note key={e.sig + Math.random()} event={e} />
+                )
+            })}
         </>
     )
 }
+
 export default Feed
