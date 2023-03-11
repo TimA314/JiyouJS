@@ -10,6 +10,7 @@ import NewEventForm from './components/NewEventForm';
 import SignIn from './pages/SignIn';
 import Relays from './pages/Relays';
 import { CssBaseline } from '@mui/material';
+import Profile from './pages/Profile';
 
 export default function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -42,7 +43,7 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Feed />} />
                 <Route path="/new-event" element={<NewEventForm />} />
-                <Route path="/profile" element={<SignIn />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/feed" element={<Feed  />} />
                 <Route path="/relays" element={<Relays />} />
                 <Route path="/signin" element={<SignIn />} />

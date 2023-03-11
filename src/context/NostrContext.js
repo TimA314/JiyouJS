@@ -8,5 +8,7 @@ export const NostrContext = React.createContext({
         "wss://relay.snort.social",
         "wss://relay.nostr.info",
         "wss://relay.snort.social"
-      ]
+      ],
+    userFollowers: [],
+    profile: {}
 });
