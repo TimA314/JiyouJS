@@ -20,7 +20,6 @@ export default function NavBar() {
 
   return (
     <Box sx={{ pb: 7 }} ref={ref}>
-      <CssBaseline />
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         <BottomNavigation
           showLabels
