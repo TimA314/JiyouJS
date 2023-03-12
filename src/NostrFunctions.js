@@ -38,6 +38,23 @@ export const GetImageFromPost = (content) => {
     return null;
 }
 
+export const publishEvent = (newEvent, pool, relays) => {
+    console.log("Event: " + newEvent)
+    const pubs = pool.publish(relays, newEvent);
+    
+    pubs.forEach(pub => {
+        pub.on("ok", () => {
+            console.log(`Published Event on ${pub}`);
+            return "ok";
+        })
+
+        pub.on("failed", reason => {
+            console.log(reason);
+            return "failed";
+        })
+    })
+}
+
 export const isValidKey = (key) => {
     return secp.utils.isValidPrivateKey(key)
 }
