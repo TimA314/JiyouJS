@@ -33,6 +33,11 @@ export default function Relays(props) {
     }
     
     const handleAddRelay = () => {
+        if (relayInput === ""){
+            toastr.error("Please enter a relay url.")
+            return;
+        }
+
         if (relayList.includes(relayInput)){
             toastr.error("Relay already exists.");
             return;
@@ -96,6 +101,7 @@ export default function Relays(props) {
                 helperText="wss://example.com"
                 />
                 <Button color='secondary' onClick={handleAddRelay}>Add Relay</Button>
+                <Button color='warning' onClick={handleAddRelay}>Save Relays Publicly</Button>
             </Box>
         </Container>
     )

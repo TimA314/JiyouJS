@@ -2,6 +2,7 @@ import {React, useContext, useEffect, useState } from 'react';
 import { getPublicKey, SimplePool } from 'nostr-tools';
 import { useNavigate } from 'react-router';
 import Note from '../components/Note';
+import { isValidKey } from '../NostrFunctions';
 
 
 function Feed(props) {
@@ -17,12 +18,21 @@ function Feed(props) {
 
         const loadEvents = async () => {
             try{
-                // const userProfile = followersPubKeys(getPublicKey(privateKey));
-                // if (userProfile){
-                //     // userProfile.
-                // }
-                let timeSince = new Date();
-                timeSince.setDate(timeSince.getDate()-5)
+
+                let followerEvent = await pool.list(relays, [{kinds: [3], authors: [getPublicKey(privateKey)], limit: 1 }])
+                if (!followerEvent || !followerEvent.tags) return;
+
+                let followerArray = [];
+                for (let i = 0; i < followerEvent.tags.length; i++){
+                    if (followerEvent.tags[i] !== "p"){
+                        continue;
+                    }
+                    if (isValidKey(followerEvent.tags[i])){
+                        followerArray.push(followerEvent.tags[i]);
+                    }
+                }
+
+                if (followerArray.length === 0) return;
 
                 let sub = pool.sub(relays, [{ kinds: [1], limit: 100, authors: followerArray }])
                 
