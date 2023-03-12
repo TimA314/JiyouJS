@@ -16,6 +16,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import moment from 'moment/moment';
 import { GetImageFromPost } from '../NostrFunctions';
+import { ClickAwayListener, Grow, MenuItem, MenuList, Popper } from '@mui/material';
+import DropDown from './DropDown';
+import { getPublicKey } from 'nostr-tools';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -30,6 +33,13 @@ const ExpandMore = styled((props) => {
 
 export default function Note(props) {
   const [expanded, setExpanded] = React.useState(false);
+
+  //MoreVertIcon Settings Menu
+  const [noteSettingOpen, setNoteSettingOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const options = ['Follow'];
+
   const event = props.event;
   const imageFromPost = GetImageFromPost(event.content);
   console.log("img.src: " + imageFromPost);
@@ -45,7 +55,10 @@ export default function Note(props) {
     console.log("profile content: " + JSON.stringify(profileContent));
   } 
 
-
+  const followUser = () => {
+    console.log("following user: " + profileContent.display_name)
+  }
+  
   return (
     <Card sx={{ maxWidth: "100%", margin: "10px", alignItems: "flex-start"}}>
       <CardHeader
@@ -55,7 +68,7 @@ export default function Note(props) {
         }
         action={
           <IconButton aria-label="settings">
-            <MoreVertIcon />
+            <DropDown  follow={followUser} />
           </IconButton>
         }
         title={profileContent ? profileContent.display_name : "Unknown"}
@@ -81,6 +94,7 @@ export default function Note(props) {
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
+
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}

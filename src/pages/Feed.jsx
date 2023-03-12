@@ -19,7 +19,7 @@ function Feed(props) {
             try{
                 let timeSince = new Date();
                 timeSince.setDate(timeSince.getDate()-5)
-                let sub = pool.sub(relays, [{ kinds: [1], limit: 100}])
+                let sub = pool.sub(relays, [{ kinds: [1], limit: 10}])
                 
                 sub.on('event', async event => {
                     if (event && !events.some((e) => e.sig === event.sig)){
@@ -44,7 +44,7 @@ function Feed(props) {
         const sortEvents = (newEvents) => {
             if (!newEvents) return newEvents;
             
-            const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at).filter((event) => event.profile[0])
+            const sortedEvents = newEvents.sort((a, b) => a.created_at < b.created_at).filter((event) => event.profile[0])
             return sortedEvents;
         }
 
