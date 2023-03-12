@@ -37,8 +37,8 @@ export default function Relays(props) {
             toastr.error("Relay already exists.");
             return;
         }
-        // props.setRelays([...props.relays, relayInput]);
-        // toastr.success("Relay Added.")
+        props.setRelays([...props.relays, relayInput]);
+        toastr.success("Relay Added.")
     }
 
     const DeleteRelay = (relay) => {
