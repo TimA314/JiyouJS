@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router';
 
 export default function Profile(props) {
 // const profile = useContext(NostrContext).profile;
-const sessionPk = window.localStorage.getItem("pk");
-const privateKey = props.privateKey;
-console.log("pk profile page : " + privateKey + "Session pk: " + sessionPk);
+const privateKey = window.localStorage.getItem("localPk");
+console.log("pk profile page : " + privateKey + "Session pk: " + privateKey);
 const navigate = useNavigate();
 // console.log(JSON.stringify(profile));
 
@@ -14,7 +13,9 @@ useEffect(() => {
   if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
 })
 
-const handleLogout = () => {
+const handleLogout = (e) => {
+  e.preventDefault();
+  window.localStorage.clear();
   navigate("/signin", {replace: true});
 }
 
@@ -23,7 +24,7 @@ const handleLogout = () => {
     <Box>
       Profile
       <Box sx={{}}>
-        <Button >Logout</Button>
+        <Button onClick={handleLogout}>Logout</Button>
       </Box>
     </Box>
 

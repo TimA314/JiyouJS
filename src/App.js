@@ -13,12 +13,10 @@ import { CssBaseline } from '@mui/material';
 import Profile from './pages/Profile';
 
 export default function App() {
-  const [privateKey, setPrivateKey] = React.useState(null);
   const [relays, setRelays] = React.useState([
     "wss://eden.nostr.land",
     "wss://relay.snort.social",
     "wss://relay.nostr.info",
-    "wss://relay.snort.social",
     "wss://nostr.oxtr.dev",
     "wss://relay.nostr.bg",
     "wss://offchain.pub",
@@ -58,12 +56,12 @@ export default function App() {
               p: 3,
             }}>
               <Routes>
-                <Route path="/" element={<Feed privateKey={privateKey} relays={relays}/>} />
-                <Route path="/new-event" element={<NewEventForm privateKey={privateKey} relays={relays}/>} />
-                <Route path="/profile" element={<Profile privateKey={privateKey} relays={relays} />} />
-                <Route path="/feed" element={<Feed privateKey={privateKey} relays={relays} />} />
-                <Route path="/relays" element={<Relays privateKey={privateKey} relays={relays} />} />
-                <Route path="/signin" element={<SignIn privateKey={privateKey} setPrivateKey={setPrivateKey} relays={relays} />} />
+                <Route path="/" element={<Feed relays={relays}/>} />
+                <Route path="/new-event" element={<NewEventForm relays={relays}/>} />
+                <Route path="/profile" element={<Profile relays={relays} />} />
+                <Route path="/feed" element={<Feed relays={relays} />} />
+                <Route path="/relays" element={<Relays relays={relays} setRelays={setRelays} />} />
+                <Route path="/signin" element={<SignIn relays={relays} />} />
               </Routes>
               <NavBar/>
           </Container>

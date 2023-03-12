@@ -20,16 +20,15 @@ import {
 
 function SignIn(props) {
     const [pkInput, setPkInput] = useState("");
-    const localPk = window.localStorage.getItem("localPk");
+    const privateKey = window.localStorage.getItem("localPk");
     const relays = props.relays;
     const navigate = useNavigate();
     
     useEffect(() => {
-        console.log("Local pk: " + localPk);
-        if (isValidKey(localPk)){
-            props.setPrivateKey(localPk);
-            loadUser(getPublicKey(localPk));
-            navigate("/feed");
+        console.log("Local pk: " + privateKey);
+        if (isValidKey(privateKey)){
+            loadUser(getPublicKey(privateKey));
+            navigate("/feed", {replace: true});
         }
     }, [])
 
@@ -45,7 +44,6 @@ function SignIn(props) {
             
             if(isValidKey(pkInput)){
                 window.localStorage.setItem("localPk", pkInput);
-                props.setPrivateKey(pkInput);
                 loadUser(getPublicKey(pkInput));
 
                 console.log("Logged In");
@@ -57,7 +55,6 @@ function SignIn(props) {
             
             if (isValidKey(hexKey)) {
                 window.localStorage.setItem("localPk", hexKey);
-                props.setPrivateKey(hexKey);
 
                 loadUser(getPublicKey(hexKey));
                 navigate("/feed", {replace: true});
@@ -67,14 +64,16 @@ function SignIn(props) {
             console.log("Invalid Key");
             toastr.error("Not a valid private Key")
             return;
-        } catch {
-            toastr.error(`There was an error validating the private key.`);
+        } catch (error) {
+            console.error(error)
+            toastr.error(`There was an error validating the private key.`, error);
         }
     };
 
     const loadUser = async (pub) => {
         let pool = new SimplePool();
         const profile = loadProfile(pool, pub, relays);
+        console.log(profile);
         pool.close();
     }
 

@@ -6,7 +6,7 @@ import Note from '../components/Note';
 
 function Feed(props) {
     const [events, setEvents] = useState([])
-    const privateKey = props.privateKey;
+    const privateKey = window.localStorage.getItem("localPk");
     const relays = props.relays;
     const navigate = useNavigate();
 

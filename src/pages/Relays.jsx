@@ -4,20 +4,29 @@ import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon,
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import toastr from 'toastr';
-import { SimplePool } from 'nostr-tools';
+import { getPublicKey, SimplePool } from 'nostr-tools';
 import { useNavigate } from 'react-router';
+import { isValidKey } from '../NostrFunctions';
 
 export default function Relays(props) {
     const [relayInput, setRelayInput] = useState("");
-    const privateKey = props.privateKey;
+    const privateKey = window.localStorage.getItem("localPk");
     const relayList =  props.relays;
     const navigate = useNavigate();
     const pool = useRef(new SimplePool())
 
     useEffect(() => {
-        if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
+        if (!isValidKey(privateKey)) navigate("/signin", {replace: true});
     })
-
+    
+    useEffect(() => {
+        const getEvents = async () => {
+            let events = await pool.current.list(relayList, [{authors: getPublicKey(privateKey), kinds: [0]}])
+            console.log(events)
+        }
+        getEvents();
+    }, [])
+    
     const handleRelayInputChange = (e) => {
         e.preventDefault();
         setRelayInput(e.target.value)
@@ -33,23 +42,15 @@ export default function Relays(props) {
     }
 
     const DeleteRelay = (relay) => {
-        // console.log("Deleting Relay: " + relay);
-        // if (relayList.length === 1){
-        //     toastr.error("Keep at least one relay");
-        //     return;
-        // }
-        // let deletedRelayList = relayList.filter((r) => r !== relay);
-        // toastr.success("Relay Removed.")
+        console.log("Deleting Relay: " + relay);
+        if (relayList.length === 1){
+            toastr.error("Keep at least one relay");
+            return;
+        }
+        const deletedRelayList = relayList.filter((r) => r !== relay);
+        props.setRelays(deletedRelayList);
+        toastr.success("Relay Removed.")
     }
-    
-    useEffect(() => {
-        // if (pk === "") navigate("/signin", {replace: true});
-        // const getEvents = async () => {
-        //     let events = await pool.current.list(relayList, [{authors: publicKey, kinds: [0]}])
-        //     console.log(events)
-        // }
-        // getEvents();
-    }, [])
     
 
     return (
@@ -92,7 +93,7 @@ export default function Relays(props) {
                 label="New Relay"
                 defaultValue=""
                 onChange={(e) => handleRelayInputChange(e)}
-                helperText="wss://"
+                helperText="wss://example.com"
                 />
                 <Button color='secondary' onClick={handleAddRelay}>Add Relay</Button>
             </Box>
