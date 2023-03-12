@@ -4,7 +4,7 @@ import { splitByUrl } from './util';
 
 export const loadProfile = async (pool, relays, pubkey) => {
     let profile = await pool.list(relays, [{kinds: [0], authors: [pubkey], limit: 1 }]);
-        return profile;
+    return profile;
 }
 
 export const setUserFollowers = async (pool, pubkey, relays) => {
@@ -20,7 +20,7 @@ export const setUserFollowers = async (pool, pubkey, relays) => {
         return followersPubKeys;
     }
 
-    return null;  
+    return null;
 }
 
 export const GetImageFromPost = (content) => {
