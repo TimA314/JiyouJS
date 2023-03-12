@@ -19,7 +19,7 @@ function Feed(props) {
             try{
                 let timeSince = new Date();
                 timeSince.setDate(timeSince.getDate()-5)
-                let sub = pool.sub(relays, [{ kinds: [1], limit: 10}])
+                let sub = pool.sub(relays, [{ kinds: [1], limit: 5, since: (timeSince / 1000)}])
                 
                 sub.on('event', async event => {
                     if (event && !events.some((e) => e.sig === event.sig)){
@@ -59,7 +59,7 @@ function Feed(props) {
         }
 
         loadEvents();
-    }, [events, navigate, privateKey, relays])
+    }, [])
 
     return (
         <>
