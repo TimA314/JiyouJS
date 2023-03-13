@@ -63,6 +63,6 @@ export function splitByUrl(str) {
 export function sortEvents(newEvents) {
   if (!newEvents) return newEvents;
   
-  const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at).filter((event) => event.profile[0])
+  const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at)
   return sortedEvents;
 }

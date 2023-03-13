@@ -2,7 +2,7 @@ import {React, useEffect, useState } from 'react';
 import { getEventHash, getPublicKey, signEvent, SimplePool } from 'nostr-tools';
 import { useNavigate } from 'react-router';
 import Note from '../components/Note';
-import { isValidKey, publishEvent } from '../NostrFunctions';
+import { publishEvent } from '../NostrFunctions';
 import { sortEvents } from '../util';
 
 
@@ -11,17 +11,17 @@ function Feed(props) {
     const privateKey = window.localStorage.getItem("localPk");
     const relays = props.relays;
     const navigate = useNavigate();
+    const pool = new SimplePool();
 
     
     useEffect(() => {
-        const pool = new SimplePool();
         if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
 
         const loadEvents = async () => {
             try{
                 let timeSince = new Date();
                 timeSince.setDate(timeSince.getDate()-5)
-                let sub = pool.sub(relays, [{ kinds: [1], limit: 5, since: (timeSince / 1000)}])
+                let sub = pool.sub(relays, [{ kinds: [1], limit: 100, since: (timeSince / 1000)}])
                 
                 sub.on('event', async event => {
                     if (event && !events.some((e) => e.sig === event.sig)){
@@ -56,38 +56,41 @@ function Feed(props) {
     }, [])
 
     const followEvent = async (userToFollowPk) => {
-        let pool = new SimplePool()
 
-        let followersPkList = [["p", userToFollowPk]];
 
         let folowersEvent = await pool.list(relays, [{kinds: [3], authors: [getPublicKey(privateKey)], limit: 1}]);
 
-        console.log("followersEvent: " + JSON.stringify(folowersEvent[0].tags[0][0]));
+        if (!folowersEvent[0] || !folowersEvent[0].tags) return;
 
-        if (folowersEvent[0] && folowersEvent[0].tags){
-            for (let i = 1; i <= folowersEvent[0].tags.lenth; i++) {
-                if (folowersEvent[0].tags[i][0] === "p"){
-                    followersPkList.push(["p", folowersEvent[0].tags[i][1]]);
-                }
-            }
-        }       
+        let currentFollowTags = folowersEvent[0].tags.filter((tag) => tag[0] === "p");
+        console.log("currentFollowTags: " + currentFollowTags)
 
+        currentFollowTags.push(["p", userToFollowPk]);
+      
         let newFollowEvent = {
             kind: 3,
             pubkey: getPublicKey(privateKey),
             created_at: Math.floor(Date.now() / 1000),
-            tags: followersPkList,
+            tags: currentFollowTags,
             content: ''
           }
 
         newFollowEvent.id = getEventHash(newFollowEvent);
         newFollowEvent.sig = signEvent(newFollowEvent, privateKey);
 
-        let response = await publishEvent(newFollowEvent, pool, relays)
-        if (response){
-            console.log("Publish Response: " + response)
-        }
-        await pool.close();
+        const pubs = await pool.publish(relays, newFollowEvent);
+    
+        pubs.forEach(pub => {
+            pub.on("ok", () => {
+                console.log(`Published Event`);
+                return "ok";
+            })
+    
+            pub.on("failed", reason => {
+                console.log(reason);
+                return "failed";
+            })
+        })
     }
 
     return (
