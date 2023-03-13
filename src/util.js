@@ -59,3 +59,10 @@ export function splitByUrl(str) {
         /((?:http|ftp|https):\/\/(?:[\w+?.\w+])+(?:[a-zA-Z0-9~!@#$%^&*()_\-=+\\/?.:;',]*)?(?:[-A-Za-z0-9+&@#/%=~_|]))/i;
     return str.split(urlRegex);
 }
+
+export function sortEvents(newEvents) {
+  if (!newEvents) return newEvents;
+  
+  const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at).filter((event) => event.profile[0])
+  return sortedEvents;
+}

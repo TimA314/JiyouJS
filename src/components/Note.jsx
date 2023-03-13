@@ -16,6 +16,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import moment from 'moment/moment';
 import { GetImageFromPost } from '../NostrFunctions';
 import DropDown from './DropDown';
+import { getPublicKey } from 'nostr-tools';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -43,8 +44,10 @@ export default function Note(props) {
     if (profileContent.picture) profilePicture = profileContent.picture;
   } 
 
-  const followUser = () => {
-    console.log("following user: " + profileContent.display_name)
+  const followUserClicked = async () => {
+    console.log("following user: " + event.pubkey)
+
+    await props.followEvent(event.pubkey);
   }
   
   return (
@@ -55,9 +58,7 @@ export default function Note(props) {
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            <DropDown  follow={followUser} />
-          </IconButton>
+            <DropDown  followUser={followUserClicked} />
         }
         title={profileContent ? profileContent.display_name : "Unknown"}
         subheader={profileContent.nip05 ? profileContent.nip05 : ""}
@@ -97,6 +98,9 @@ export default function Note(props) {
           <Typography paragraph display="h6">MetaData:</Typography>
           <Typography variant="caption" display="block">
             Event Id: {event.id}
+          </Typography>
+          <Typography variant="caption" display="block" gutterBottom>
+            PubKey hex: {event.pubkey}
           </Typography>
           <Typography variant="caption" display="block" gutterBottom>
             Created: {moment.unix(event.created_at).format("LLLL")}

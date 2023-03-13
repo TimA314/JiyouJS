@@ -21,7 +21,7 @@ export default function DropDown(props) {
       </Button>
       <Popper id={id} open={open} anchorEl={anchorEl}>
         <Box sx={{ border: 1, p: 1, bgcolor: 'background.paper' }}>
-          <Button onClick={props.follow}>Follow</Button>
+          <Button onClick={props.followUser}>Follow</Button>
         </Box>
       </Popper>
     </Box>

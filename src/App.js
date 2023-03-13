@@ -11,6 +11,7 @@ import SignIn from './pages/SignIn';
 import Relays from './pages/Relays';
 import { CssBaseline } from '@mui/material';
 import Profile from './pages/Profile';
+import FollowerFeed from './pages/FollowerFeed';
 
 export default function App() {
   const [relays, setRelays] = React.useState([
@@ -60,6 +61,7 @@ export default function App() {
                 <Route path="/new-event" element={<NewEventForm relays={relays}/>} />
                 <Route path="/profile" element={<Profile relays={relays} />} />
                 <Route path="/feed" element={<Feed relays={relays} />} />
+                <Route path="/follows" element={<FollowerFeed relays={relays} />} />
                 <Route path="/relays" element={<Relays relays={relays} setRelays={setRelays} />} />
                 <Route path="/signin" element={<SignIn relays={relays} />} />
               </Routes>

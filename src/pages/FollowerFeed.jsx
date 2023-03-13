@@ -1,80 +1,58 @@
-import {React, useContext, useEffect, useState } from 'react';
+import {React, useContext, useEffect, useRef, useState } from 'react';
 import { getPublicKey, SimplePool } from 'nostr-tools';
 import { useNavigate } from 'react-router';
 import Note from '../components/Note';
 import { isValidKey } from '../NostrFunctions';
+import { sortEvents } from '../util';
 
 
-function Feed(props) {
+function FollowerFeed(props) {
     const [events, setEvents] = useState([])
+    const [followerPubKeyArray, setFollowerPubKeyArray] = useState([])
     const privateKey = window.localStorage.getItem("localPk");
     const relays = props.relays;
     const navigate = useNavigate();
 
+    const pool = new SimplePool();
     
     useEffect(() => {
-        const pool = new SimplePool();
         if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
 
         const loadEvents = async () => {
             try{
-
                 let followerEvent = await pool.list(relays, [{kinds: [3], authors: [getPublicKey(privateKey)], limit: 1 }])
-                if (!followerEvent || !followerEvent.tags) return;
+                console.log(followerEvent[0])
+                if (!followerEvent[0] || !followerEvent[0].tags || !followerEvent[0].tags[0] || followerPubKeyArray.some((e) => e === followerEvent[0].pubkey)) return;
 
-                let followerArray = [];
-                for (let i = 0; i < followerEvent.tags.length; i++){
-                    if (followerEvent.tags[i] !== "p"){
+                for (let i = 0; i < followerEvent[0].tags.length; i++){
+                    if (followerEvent[0].tags[i][0] !== "p"){
                         continue;
                     }
-                    if (isValidKey(followerEvent.tags[i])){
-                        followerArray.push(followerEvent.tags[i]);
+                    if (isValidKey(followerEvent[0].tags[i][1])){
+
+                        setFollowerPubKeyArray((prevEvents) => {
+                            return [...prevEvents, followerEvent[0].tags[i][1]];
+                        })
                     }
                 }
 
-                if (followerArray.length === 0) return;
+                console.log(followerPubKeyArray)
+                let poolOfEvents = await pool.list(relays, [{kinds: [1], authors: [followerPubKeyArray], limit: 100 }])
+                console.log("poolEvents" + JSON.stringify(poolOfEvents))
 
-                let sub = pool.sub(relays, [{ kinds: [1], limit: 100, authors: followerArray }])
-                
-                sub.on('event', async event => {
-                    if (event && !events.some((e) => e.sig === event.sig)){
-                        event.profile = await getProfile(event.pubkey)
-                        setEvents((prevEvents) => {
-                            let newEvents = sortEvents([...prevEvents, event])
-                            console.log(newEvents);
-                            return newEvents;
-                        });
-                    } 
-                })
+                setEvents((prevEvents) => {
+                    let newEvents = sortEvents(poolOfEvents)
+                    return newEvents;
+                });
 
             } catch (error) {
                 console.error("event error: " + error)
-            } finally {
-                if (pool){
-                    await pool.close();
-                }
             }
         }
-
-        const sortEvents = (newEvents) => {
-            if (!newEvents) return newEvents;
-            
-            const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at).filter((event) => event.profile[0])
-            return sortedEvents;
-        }
-
-        const getProfile = async (pubkeyForProfile) => {
-            let prof = await pool.list(relays, [{kinds: [0], authors: [pubkeyForProfile], limit: 1 }])
-
-            if(prof){
-                return prof;
-            }
-
-            return null;
-        }
-
+        
         loadEvents();
-    }, [events, navigate, privateKey, relays])
+    }, [])
+    
 
     return (
         <>
@@ -87,4 +65,4 @@ function Feed(props) {
     )
 }
 
-export default Feed
+export default FollowerFeed

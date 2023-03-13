@@ -38,13 +38,14 @@ export const GetImageFromPost = (content) => {
     return null;
 }
 
-export const publishEvent = (newEvent, pool, relays) => {
-    console.log("Event: " + newEvent)
-    const pubs = pool.publish(relays, newEvent);
+
+export const publishEvent = async (newEvent, pool, relays) => {
+    console.log("Event: " + JSON.stringify(newEvent))
+    const pubs = await pool.publish(relays, newEvent);
     
     pubs.forEach(pub => {
         pub.on("ok", () => {
-            console.log(`Published Event on ${pub}`);
+            console.log(`Published Event`);
             return "ok";
         })
 
