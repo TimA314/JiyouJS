@@ -59,11 +59,11 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Feed relays={relays}/>} />
                 <Route path="/new-event" element={<NewEventForm relays={relays}/>} />
-                <Route path="/profile" element={<Profile relays={relays} />} />
+                <Route path="/profile" element={<Profile relays={relays} profile={profile} />} />
                 <Route path="/feed" element={<Feed relays={relays} />} />
                 <Route path="/follows" element={<FollowerFeed relays={relays} />} />
                 <Route path="/relays" element={<Relays relays={relays} setRelays={setRelays} />} />
-                <Route path="/signin" element={<SignIn relays={relays} />} />
+                <Route path="/signin" element={<SignIn relays={relays} setProfile={setProfile} />} />
               </Routes>
               <NavBar/>
           </Container>

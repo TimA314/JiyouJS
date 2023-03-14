@@ -9,14 +9,18 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 
 
-export default function NavBar() {
+export default function NavBar(props) {
+  const privateKey = window.localStorage.getItem("localPk");
   const [value, setValue] = React.useState(0);
   const ref = React.useRef(null);
-
+  
   React.useEffect(() => {
     ref.current.ownerDocument.body.scrollTop = 0;
   }, []);
 
+  if (!privateKey) {
+    return (<Box ref={ref}></Box>);
+  }
   return (
     <Box sx={{ pb: 7 }} ref={ref}>
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
