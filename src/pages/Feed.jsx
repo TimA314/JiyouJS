@@ -19,6 +19,7 @@ function Feed(props) {
 
         const loadEvents = async () => {
             try{
+                let followerPks = getUserFollowers()
                 let timeSince = new Date();
                 timeSince.setDate(timeSince.getDate()-5)
                 let sub = pool.sub(relays, [{ kinds: [1], limit: 100, since: (timeSince / 1000)}])
@@ -27,7 +28,7 @@ function Feed(props) {
                     if (event && !events.some((e) => e.sig === event.sig)){
                         event.profile = await addProfileToEvent(event.pubkey)
                         setEvents((prevEvents) => {
-                            let newEvents = sortEvents([...prevEvents, event])
+                            let newEvents = sortEvents([...prevEvents, event], followerPks)
                             return newEvents;
                         });
                     } 
@@ -40,6 +41,19 @@ function Feed(props) {
                     await pool.close();
                 }
             }
+        }
+
+        const getUserFollowers = async() => {
+            let userFollowerEvent = await pool.list(relays, [{kinds: [3], authors: [getPublicKey(privateKey)], limit: 1 }])
+
+            if (!userFollowerEvent[0] || !userFollowerEvent[0].tags) return;
+
+            let followerArray = userFollowerEvent[0].tags.filter((tag) => tag[0] === "p");
+            let followerPks = [];
+            for(let i=0; i<followerArray.length;i++){
+                followerPks.push(followerArray[i][1]);
+            }
+            return followerPks;
         }
 
         const addProfileToEvent = async (eventPubkey) => {
@@ -97,7 +111,7 @@ function Feed(props) {
         <>
             {events.map(e => {
                 return (
-                    <Note key={e.sig + Math.random()} event={e} followEvent={followEvent}/>
+                    <Note key={e.sig + Math.random()} event={e} followEvent={followEvent} />
                 )
             })}
         </>

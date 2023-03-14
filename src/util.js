@@ -55,14 +55,23 @@ export function getReactions(notes, id, kind) {
 }
 
 export function splitByUrl(str) {
+  if (!str) return null;
     const urlRegex =
         /((?:http|ftp|https):\/\/(?:[\w+?.\w+])+(?:[a-zA-Z0-9~!@#$%^&*()_\-=+\\/?.:;',]*)?(?:[-A-Za-z0-9+&@#/%=~_|]))/i;
-    return str.split(urlRegex);
+    return str.split(urlRegex)[0];
 }
 
-export function sortEvents(newEvents) {
+export function sortEvents(newEvents, followerArray) {
   if (!newEvents) return newEvents;
   
   const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at)
-  return sortedEvents;
+  const mappedEvents = sortedEvents.map((e) => {
+    return {
+      ...e,
+      isFollowing: followerArray !== [] ? followerArray.some(followPk => followPk === e.pubkey) : false
+    }
+});
+  
+  console.log(mappedEvents)
+  return mappedEvents;
 }

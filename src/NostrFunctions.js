@@ -24,15 +24,14 @@ export const setUserFollowers = async (pool, pubkey, relays) => {
 }
 
 export const GetImageFromPost = (content) => {
+    if(!content) return null;
     const validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-    let image = new Image();
     let splitArray = splitByUrl(content);
-    if(splitArray.length === 0) return null;
+    if(!splitArray || splitArray.length === 0) return null;
 
     for (let i = 0; i < splitArray.length; i++){
-        if (splitArray[i].includes(validExtensions)){
-            image.src = decodeURI(splitArray[i]);
-            return image.src;
+        if (validExtensions.includes(splitArray[i])){
+            return splitArray[i];
         }
     }
     return null;

@@ -37,17 +37,22 @@ export default function Note(props) {
     setExpanded(!expanded);
   };
 
+  //Set Profile Content and Profile Picture
   let profileContent = null;
   let profilePicture = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973461_1280.png";
-  if (event.profile[0] && event.profile[0].content){
+  if (event && event.profile[0] && event.profile[0].content){
     profileContent = JSON.parse(event.profile[0].content);
     if (profileContent.picture) profilePicture = profileContent.picture;
   } 
 
   const followUserClicked = async () => {
-    console.log("following user: " + event.pubkey)
+    console.log("unfollwing user: " + event.pubkey)
 
     await props.followEvent(event.pubkey);
+  }
+
+  const unFollowUserClicked = async () => {
+    console.log("unfollowEvent: " + event.pubkey);
   }
   
   return (
@@ -58,15 +63,14 @@ export default function Note(props) {
           </Avatar>
         }
         action={
-            <DropDown  followUser={followUserClicked} />
+            <DropDown  followUser={followUserClicked} unFollowUser={unFollowUserClicked} isFollowing={event.isFollowing} />
         }
         title={profileContent ? profileContent.display_name : "Unknown"}
-        subheader={profileContent.nip05 ? profileContent.nip05 : ""}
+        subheader={profileContent?.nip05 ? profileContent.nip05 : ""}
       />
       {imageFromPost && (
         <CardMedia
           component="img"
-          height="194"
           image={imageFromPost}
           alt="picture"
         />)
@@ -83,6 +87,9 @@ export default function Note(props) {
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
+        <Typography variant="p">
+        {moment.unix(event.created_at).fromNow()}
+        </Typography>
 
         <ExpandMore
           expand={expanded}

@@ -18,16 +18,8 @@ function FollowerFeed(props) {
 
         const loadEvents = async () => {
             try{
-                let followerEvents = await pool.list(relays, [{kinds: [3], authors: [getPublicKey(privateKey)], limit: 1 }])
 
-                if (!followerEvents[0] || !followerEvents[0].tags) return;
-
-                let followerArray = followerEvents[0].tags.filter((tag) => tag[0] === "p");
-                let followerPks = [];
-                for(let i=0; i<followerArray.length;i++){
-                    followerPks.push(followerArray[i][1]);
-                }
-
+                let followerPks = await getUserFollowers()
                 let poolOfEvents = await pool.list(relays, [{kinds: [1], authors: followerPks, limit: 100 }])
 
                 console.log("poolEvents" + JSON.stringify(poolOfEvents))
@@ -44,7 +36,7 @@ function FollowerFeed(props) {
                     }
 
                     setEvents((prevEvents) => {
-                        let newEvents = sortEvents([...prevEvents, poolOfEvents[i]])
+                        let newEvents = sortEvents([...prevEvents, poolOfEvents[i]], followerPks ?? [])
                         return newEvents;
                     });
                 }
@@ -53,14 +45,18 @@ function FollowerFeed(props) {
                 console.error("event error: " + error)
             }
         }
-        
-        const addProfileToEvent = async (addToProfileEvent) => {
-            let prof = await pool.list(relays, [{kinds: [0], authors: [addToProfileEvent.pubkey], limit: 1 }])
 
-            if(prof){
-                addToProfileEvent.profile = prof;
-                return addProfileToEvent;
+        const getUserFollowers = async() => {
+            let userFollowerEvent = await pool.list(relays, [{kinds: [3], authors: [getPublicKey(privateKey)], limit: 1 }])
+
+            if (!userFollowerEvent[0] || !userFollowerEvent[0].tags) return;
+
+            let followerArray = userFollowerEvent[0].tags.filter((tag) => tag[0] === "p");
+            let followerPks = [];
+            for(let i=0; i<followerArray.length;i++){
+                followerPks.push(followerArray[i][1]);
             }
+            return followerPks;
         }
 
         loadEvents();
@@ -75,7 +71,7 @@ function FollowerFeed(props) {
             <>
                 {events.map(e => {
                     return (
-                        <Note key={e.sig + Math.random()} event={e} followEvent={unFollowEvent}/>
+                        <Note key={e.sig + Math.random()} event={e} unFollowEvent={unFollowEvent}/>
                     )
                 })}
             </>
