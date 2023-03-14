@@ -64,7 +64,7 @@ export function splitByUrl(str) {
 export function sortEvents(newEvents, followerArray) {
   if (!newEvents) return newEvents;
   
-  const sortedEvents = newEvents.sort((a, b) => a.created_at > b.created_at)
+  const sortedEvents = newEvents.slice().sort((a, b) => b.created_at - a.created_at)
   const mappedEvents = sortedEvents.map((e) => {
     return {
       ...e,

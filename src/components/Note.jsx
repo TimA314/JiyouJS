@@ -87,7 +87,7 @@ export default function Note(props) {
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
-        <Typography variant="p">
+        <Typography variant="subtitle2">
         {moment.unix(event.created_at).fromNow()}
         </Typography>
 
