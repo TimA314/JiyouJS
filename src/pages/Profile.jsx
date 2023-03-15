@@ -92,7 +92,7 @@ if(privateKey){
         </Toolbar>
         <StyledToolbar>
           <Avatar
-            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973461_1280.png"
+            src="https://api.dicebear.com/5.x/bottts/svg?seed=Rascal"
             sx={{ width: 200, height: 200}}
             />
           <Typography variant="h6" alignSelf="center" margin="15px" display="flex">

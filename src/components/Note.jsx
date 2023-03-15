@@ -16,6 +16,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import moment from 'moment/moment';
 import { GetImageFromPost } from '../NostrFunctions';
 import DropDown from './DropDown';
+import { DiceBears } from '../util';
 import { getPublicKey } from 'nostr-tools';
 
 const ExpandMore = styled((props) => {
@@ -39,7 +40,7 @@ export default function Note(props) {
 
   //Set Profile Content and Profile Picture
   let profileContent = null;
-  let profilePicture = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973461_1280.png";
+  let profilePicture = DiceBears();
   if (event && event.profile[0] && event.profile[0].content){
     profileContent = JSON.parse(event.profile[0].content);
     if (profileContent.picture) profilePicture = profileContent.picture;
