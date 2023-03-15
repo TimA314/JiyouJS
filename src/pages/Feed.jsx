@@ -2,7 +2,6 @@ import {React, useEffect, useState } from 'react';
 import { getEventHash, getPublicKey, signEvent, SimplePool } from 'nostr-tools';
 import { useNavigate } from 'react-router';
 import Note from '../components/Note';
-import { publishEvent } from '../NostrFunctions';
 import { sortEvents } from '../util';
 
 
@@ -22,24 +21,40 @@ function Feed(props) {
                 let followerPks = getUserFollowers()
                 let timeSince = new Date();
                 timeSince.setDate(timeSince.getDate()-5)
-                let sub = pool.sub(relays, [{ kinds: [1], limit: 100, since: (timeSince / 1000)}])
                 
-                sub.on('event', async event => {
-                    if (event && !events.some((e) => e.sig === event.sig)){
-                        event.profile = await addProfileToEvent(event.pubkey)
-                        setEvents((prevEvents) => {
-                            let newEvents = sortEvents([...prevEvents, event], followerPks)
-                            return newEvents;
-                        });
-                    } 
-                })
+                let poolOfEvents = await pool.list(relays, [{kinds: [1] }])
+                console.log("poolEvents" + JSON.stringify(poolOfEvents))
+
+                if(!poolOfEvents) {
+                    return;
+                }
+
+                for(let i=0;i<poolOfEvents.length;i++) {
+                    let prof = await pool.list(relays, [{kinds: [0], authors: [poolOfEvents[i].pubkey], limit: 1 }])
+
+                    if(prof){
+                        poolOfEvents[i].profile = prof;
+                    }
+
+                    setEvents((prevEvents) => {
+                        let newEvents = sortEvents([...prevEvents, poolOfEvents[i]], followerPks ?? [])
+                        return newEvents;
+                    });
+                }
+
+
+                // sub.on('event', async event => {
+                //     if (event && !events.some((e) => e.sig === event.sig)){
+                //         event.profile = await addProfileToEvent(event.pubkey)
+                //         setEvents((prevEvents) => {
+                //             let newEvents = sortEvents([...prevEvents, event], followerPks)
+                //             return newEvents;
+                //         });
+                //     } 
+                // })
 
             } catch (error) {
                 console.error("event error: " + error)
-            } finally {
-                if (pool){
-                    await pool.close();
-                }
             }
         }
 

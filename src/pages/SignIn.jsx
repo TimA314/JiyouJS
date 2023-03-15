@@ -66,11 +66,6 @@ function SignIn(props) {
         }
     }, [])
 
-    const handleInputChange = (e) => {
-        e.preventDefault();
-        setPkInput(e.target.value)
-    }
-
     const handlePrivateKeySubmit = (event) => {
         event.preventDefault();
         try{
@@ -131,7 +126,7 @@ function SignIn(props) {
                             size="large"
                             value={pkInput}
                             color="secondary"
-                            onChange={(e) => handleInputChange(e)}
+                            onChange={(e) => setPkInput(e.target.value)}
                             startAdornment={
                                 <InputAdornment position="start">
                                     <KeyIcon />
