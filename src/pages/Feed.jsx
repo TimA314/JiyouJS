@@ -71,16 +71,6 @@ function Feed(props) {
             return followerPks;
         }
 
-        const addProfileToEvent = async (eventPubkey) => {
-            let prof = await pool.list(relays, [{kinds: [0], authors: [eventPubkey], limit: 1 }])
-
-            if(prof){
-                return prof;
-            }
-
-            return null;
-        }
-
         loadEvents();
     }, [])
 
