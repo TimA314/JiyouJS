@@ -32,11 +32,8 @@ Jiyou supports the following NIP's:
   - [ ] NIP-58: Badges
   - [ ] NIP-65: Relay List Metadata
   
-Running
 
 To run the application, use
 
-$ npm start
-To build the application and nostr package, use
-
 $ npm install
+$ npm start
