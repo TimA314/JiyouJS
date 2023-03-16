@@ -1,5 +1,5 @@
 # Jiyou
-### Jiyou is aNostr Client built using React.js and MaterialUI.
+### Jiyou is a Nostr Client built using React.js and MaterialUI.
 
 Jiyou supports the following NIP's:
 
@@ -32,7 +32,7 @@ Jiyou supports the following NIP's:
   - [ ] NIP-58: Badges
   - [ ] NIP-65: Relay List Metadata
   
-
+---
 To run the application, use
 
 $ npm install
