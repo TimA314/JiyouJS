@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import SaveIcon from '@mui/icons-material/Save';
-
+import ImageIcon from '@mui/icons-material/Image';
 
 
 export default function Profile(props) {
@@ -62,17 +62,20 @@ let pool = new SimplePool();
 
 useEffect(() => {
   if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
+
   const getUserProfile = async () => {
     let prof = await pool.list(props.relays, [{kinds: [0], authors: [getPublicKey(privateKey)], limit: 1 }])
     console.log(prof);
-    if (prof !== [] && prof[0].content) {
+    if (prof && prof[0] && prof[0].content) {
       console.log(JSON.parse(prof[0].content))
       profileRef.current = JSON.parse(prof[0].content);
       profileImageUrlRef.current = JSON.parse(prof[0].content).picture;
     }
   }
+
   getUserProfile();
-},[])
+})
+
 
 const handleFormSubmit = (e) => {
   e.preventDefault();
@@ -117,7 +120,6 @@ const updateProfileEvent = async (newProfileImageUrl, newBannerImageUrlInput) =>
 }
 
 const handleProfileImageUrlInputChange = (e) => {
-  console.log(e.target.value)
   profileImageUrlRef.current = e.target.value;
 }
 
@@ -146,7 +148,7 @@ if(privateKey){
         </Toolbar>
         <StyledToolbar>
           <Avatar
-            src="https://api.dicebear.com/5.x/bottts/svg?seed=Cookie&mouth=smile01,smile02&sides=antenna01,cables01,cables02,round,square,squareAssymetric&top=antenna,antennaCrooked,glowingBulb01,glowingBulb02,lights,radar,bulb01"
+            src={profileImageUrlRef.current ? profileImageUrlRef.current : "https://api.dicebear.com/5.x/bottts/svg?seed=Cookie&mouth=smile01,smile02&sides=antenna01,cables01,cables02,round,square,squareAssymetric&top=antenna,antennaCrooked,glowingBulb01,glowingBulb02,lights,radar,bulb01"}
             sx={{ width: 200, height: 200}}
             />
           <Typography variant="h6" alignSelf="center" margin="15px" display="flex">
@@ -171,23 +173,24 @@ if(privateKey){
                   color='secondary' 
                   fullWidth
                   InputProps={{
-                    endAdornment: 
-                      <InputAdornment position="end">
-                          <SaveIcon />
+                    startAdornment: 
+                      <InputAdornment position="start">
+                          <ImageIcon />
                       </InputAdornment>
                   }}
                 />
-                <Input
+                <TextField
                     id="bannerImageUrlInput"
-                    fullWidth
-                    size="large"
-                    color="secondary"
                     onChange={handleBannerImageUrlInputChange}
-                    endAdornment={
-                        <InputAdornment position="end">
-                            <SaveIcon />
+                    value={bannerImageUrlRef.current}
+                    fullWidth
+                    color="secondary"
+                    InputProps={{
+                      startAdornment: 
+                        <InputAdornment position="start">
+                            <ImageIcon />
                         </InputAdornment>
-                    }
+                    }}
                 />
               </Stack>
             </form>
