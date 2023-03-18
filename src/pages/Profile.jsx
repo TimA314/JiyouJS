@@ -1,23 +1,20 @@
-import { AppBar, Avatar, Box, Button, Card, IconButton, Input, InputAdornment, MenuItem, Paper, Stack, TextField, Toolbar, Typography, useTheme } from '@mui/material'
+import { AppBar, Avatar, Box, Button, Card, FormControl, IconButton, InputAdornment, MenuItem, Paper, Stack, TextField, Toolbar, Typography, useTheme } from '@mui/material'
 import { styled } from '@mui/system';
-import { getEventHash, getPublicKey, signEvent, SimplePool } from 'nostr-tools';
+import { getEventHash, getPublicKey, signEvent, SimplePool, validateEvent, verifySignature } from 'nostr-tools';
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import SaveIcon from '@mui/icons-material/Save';
 import ImageIcon from '@mui/icons-material/Image';
 
 
 export default function Profile(props) {
 const smallScreen = useMediaQuery('(max-width:600px)');
-const profileRef = useState(null);
-const profileImageUrlRef = useRef("");
-const bannerImageUrlRef = useRef("");
+const [getProfileEvent, setGetProfileEvent] = useState(true);
+const profileRef = useRef({});
 const privateKey = window.localStorage.getItem("localPk");
-console.log("pk profile page : " + privateKey + "Session pk: " + privateKey);
 const navigate = useNavigate();
 console.log(smallScreen ? "small screen" : "larger screen")
-
+const pool = new SimplePool();
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +35,7 @@ const MediumToLargeAvatar = styled('div')(({ theme }) => ({
 }));
 
 const SmallScreenStyle = styled('div')(({ theme }) => ({
-  maxWidth: 300,
+  maxWidth: 400,
   margin: 'auto',
   display: 'flex',
   justifyContent: 'center',
@@ -47,29 +44,40 @@ const SmallScreenStyle = styled('div')(({ theme }) => ({
 }));
 
 const SmallScreenAvatar = styled('div')(({ theme }) => ({
-  maxWidth: 300,
+  maxWidth: 400,
   margin: "auto",
   display: 'flex',
   justifyContent: 'center',
   flexDirection:'column',
 }));
 
+const styles = {
+  paperContainer: {
+      banner: `url(${profileRef.current.banner})`
+  }
+};
+
 // ----------------------------------------------------------------------
 
 const StyledContent = smallScreen ? SmallScreenStyle : MediumToLargeScreenStyle;
 const StyledToolbar = smallScreen ? SmallScreenAvatar : MediumToLargeAvatar;
-let pool = new SimplePool();
 
 useEffect(() => {
   if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
+  if (!getProfileEvent) return;
 
   const getUserProfile = async () => {
     let prof = await pool.list(props.relays, [{kinds: [0], authors: [getPublicKey(privateKey)], limit: 1 }])
-    console.log(prof);
+
     if (prof && prof[0] && prof[0].content) {
-      console.log(JSON.parse(prof[0].content))
-      profileRef.current = JSON.parse(prof[0].content);
-      profileImageUrlRef.current = JSON.parse(prof[0].content).picture;
+
+      let parsedProf = JSON.parse(prof[0].content);
+      
+      if (!parsedProf || parsedProf.length < 1) return;
+
+      profileRef.current = parsedProf;
+      console.log(parsedProf)
+      setGetProfileEvent(false)
     }
   }
 
@@ -79,30 +87,35 @@ useEffect(() => {
 
 const handleFormSubmit = (e) => {
   e.preventDefault();
-  updateProfileEvent(profileImageUrlRef.current, bannerImageUrlRef.current);
+  let imageUrlInput = document.getElementById("profileImageUrlInput");
+  let bannerUrlInput = document.getElementById("bannerImageUrlInput");
+  console.log(imageUrlInput.value, bannerUrlInput.value);
+  updateProfileEvent(imageUrlInput.value, bannerUrlInput.value);
 }
 
-const updateProfileEvent = async (newProfileImageUrl, newBannerImageUrlInput) => {
+const updateProfileEvent = async (imageUrlInput, bannerUrlInput) => {
   console.log("updating profile")
-  let newContent = {};
-  
 
-    newContent = {name: "Test", picture: newProfileImageUrl, banner: newBannerImageUrlInput};
-  
+  const newContent = JSON.stringify({name: "JiYou", picture: imageUrlInput.toString(), banner: bannerUrlInput.toString()});
 
-  
   let newProfileEvent = {
       kind: 0,
       pubkey: getPublicKey(privateKey),
       created_at: Math.floor(Date.now() / 1000),
       tags: [],
-      content: JSON.stringify(newContent)
+      content: newContent
     }
-  console.log("New Profile Event: " + newProfileEvent)
+  console.log("New Profile Event: " + JSON.stringify(newProfileEvent))
 
 
   newProfileEvent.id = getEventHash(newProfileEvent);
   newProfileEvent.sig = signEvent(newProfileEvent, privateKey);
+
+  if(!validateEvent(newProfileEvent) || !verifySignature(newProfileEvent)){
+    console.log("Event is Invalid")
+    return;
+  }
+  console.log("Event is valid")
 
   const pubs = await pool.publish(props.relays, newProfileEvent);
 
@@ -113,22 +126,15 @@ const updateProfileEvent = async (newProfileImageUrl, newBannerImageUrlInput) =>
       })
 
       pub.on("failed", reason => {
-          console.log(reason);
+          console.log("Failed: " + reason);
           return "failed";
       })
   })
-}
 
-const handleProfileImageUrlInputChange = (e) => {
-  profileImageUrlRef.current = e.target.value;
-}
-
-const handleBannerImageUrlInputChange = (e) => {
-  bannerImageUrlRef.current = e.target.value;
+  setGetProfileEvent(true);
 }
 
 const handleLogout = (e) => {
-  e.preventDefault();
   alert("Logged out.");
   window.localStorage.clear();
   navigate("/signin", {replace: true});
@@ -137,40 +143,38 @@ const handleLogout = (e) => {
 if(privateKey){
   return (
     <Box width="100%">
-      <AppBar position="static" >
-        <Box>
-            <Button type="button" onClick={handleLogout}>Logout</Button>
-        </Box>
-        <Toolbar >
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuItem />
-          </IconButton>
-        </Toolbar>
-        <StyledToolbar>
-          <Avatar
-            src={profileImageUrlRef.current ? profileImageUrlRef.current : "https://api.dicebear.com/5.x/bottts/svg?seed=Cookie&mouth=smile01,smile02&sides=antenna01,cables01,cables02,round,square,squareAssymetric&top=antenna,antennaCrooked,glowingBulb01,glowingBulb02,lights,radar,bulb01"}
-            sx={{ width: 200, height: 200}}
-            />
-          <Typography variant="h6" alignSelf="center" margin="15px" display="flex">
-            {profileRef && profileRef.content ? profileRef.content.name : "Nostrich"}
-          </Typography>
-        </StyledToolbar>
-      </AppBar>
+      <Paper ref={profileRef} style={styles.Banner}>
+        <AppBar position="static" >
+          <Box>
+              <Button type="button" onClick={handleLogout}>Logout</Button>
+          </Box>
+          <Toolbar >
+            <IconButton edge="start" color="inherit" aria-label="menu">
+              <MenuItem />
+            </IconButton>
+          </Toolbar>
+          <StyledToolbar>
+              <Avatar
+                src={profileRef.current.picture ? profileRef.current.picture : "https://api.dicebear.com/5.x/bottts/svg?seed=Cookie&mouth=smile01,smile02&sides=antenna01,cables01,cables02,round,square,squareAssymetric&top=antenna,antennaCrooked,glowingBulb01,glowingBulb02,lights,radar,bulb01"}
+                sx={{ width: 200, height: 200}}
+                />
+            <Typography variant="h6" alignSelf="center" margin="15px" display="flex" >
+              {profileRef.current.name}
+            </Typography>
+          </StyledToolbar>
+        </AppBar>
+      </Paper>
 
       <StyledContent>
-        <Paper>
-          <Card>
-            <form>
               <Stack direction="column" spacing={5} marginBottom="10px">
               <Button variant="contained" type='submit' color='success' onClick={handleFormSubmit}>
                   SAVE
                 </Button>
                 <TextField 
                   id="profileImageUrlInput"
-                  onChange={handleProfileImageUrlInputChange}
-                  value={profileImageUrlRef.current}
-                  variant="outlined" 
-                  color='secondary' 
+                  label="Profile Image URL"
+                  color='secondary'
+                  defaultValue={profileRef.current.picture} 
                   fullWidth
                   InputProps={{
                     startAdornment: 
@@ -178,24 +182,21 @@ if(privateKey){
                           <ImageIcon />
                       </InputAdornment>
                   }}
-                />
+                  />
                 <TextField
                     id="bannerImageUrlInput"
-                    onChange={handleBannerImageUrlInputChange}
-                    value={bannerImageUrlRef.current}
+                    label="Banner Image URL"
                     fullWidth
                     color="secondary"
+                    defaultValue={profileRef.current.banner} 
                     InputProps={{
                       startAdornment: 
-                        <InputAdornment position="start">
+                      <InputAdornment position="start">
                             <ImageIcon />
                         </InputAdornment>
                     }}
-                />
+                    />
               </Stack>
-            </form>
-          </Card>
-        </Paper>
       </StyledContent>
     </Box>
   )
