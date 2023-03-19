@@ -15,6 +15,7 @@ const privateKey = window.localStorage.getItem("localPk");
 const navigate = useNavigate();
 console.log(smallScreen ? "small screen" : "larger screen")
 const pool = new SimplePool();
+const relays = props.relays;
 
 // ----------------------------------------------------------------------
 
@@ -67,7 +68,7 @@ useEffect(() => {
   if (!getProfileEvent) return;
 
   const getUserProfile = async () => {
-    let prof = await pool.list(props.relays, [{kinds: [0], authors: [getPublicKey(privateKey)], limit: 1 }])
+    let prof = await pool.list(relays, [{kinds: [0], authors: [getPublicKey(privateKey)], limit: 1 }])
 
     if (prof && prof[0] && prof[0].content) {
 
@@ -117,21 +118,21 @@ const updateProfileEvent = async (imageUrlInput, bannerUrlInput) => {
   }
   console.log("Event is valid")
 
-  const pubs = await pool.publish(props.relays, newProfileEvent);
+  const pubs = pool.publish(relays, newProfileEvent);
 
   pubs.forEach(pub => {
-      pub.on("ok", () => {
-          console.log(`Published Event`);
-          return "ok";
-      })
+    pub.on("ok", () => {
+        console.log(`Published Event`);
+        return "ok";
+    })
 
-      pub.on("failed", reason => {
-          console.log("Failed: " + reason);
-          return "failed";
-      })
+    pub.on("failed", reason => {
+        console.log(reason);
+        return "failed";
+    })
   })
 
-  setGetProfileEvent(true);
+  // setGetProfileEvent(true);
 }
 
 const handleLogout = (e) => {
