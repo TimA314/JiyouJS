@@ -95,9 +95,9 @@ const handleFormSubmit = (e) => {
 }
 
 const updateProfileEvent = async (imageUrlInput, bannerUrlInput) => {
-  console.log("updating profile")
+  let prof = await pool.list(relays, [{kinds: [0], authors: [getPublicKey(privateKey)], limit: 1 }])
 
-  const newContent = JSON.stringify({name: "JiYou", picture: imageUrlInput.toString(), banner: bannerUrlInput.toString()});
+  const newContent = JSON.stringify({name: "JiYou", about: "", picture: imageUrlInput.toString(), banner: bannerUrlInput});
 
   let newProfileEvent = {
       kind: 0,
@@ -118,21 +118,19 @@ const updateProfileEvent = async (imageUrlInput, bannerUrlInput) => {
   }
   console.log("Event is valid")
 
-  const pubs = pool.publish(relays, newProfileEvent);
-
-  pubs.forEach(pub => {
-    pub.on("ok", () => {
-        console.log(`Published Event`);
-        return "ok";
-    })
-
-    pub.on("failed", reason => {
-        console.log(reason);
-        return "failed";
-    })
+  let pubs = pool.publish(relays, newProfileEvent);
+  console.log("pubs: " + JSON.stringify(pubs));
+  
+  pubs.on("ok", () => {
+    console.log(`Published Event`);
+    setGetProfileEvent(true);
+    return "ok";
   })
 
-  // setGetProfileEvent(true);
+  pubs.on("failed", reason => {
+      console.log("failed: " + reason);
+      return "failed";
+  })
 }
 
 const handleLogout = (e) => {
