@@ -64,11 +64,12 @@ export function splitByUrl(str) {
 export function sortEvents(newEvents, followerArray) {
   if (!newEvents) return newEvents;
   
-  const sortedEvents = newEvents.slice().sort((a, b) => b.created_at - a.created_at)
-const mappedEvents = sortedEvents.map((e) => {
-  const isFollowing = Array.isArray(followerArray) && followerArray.some(followPk => followPk === e.pubkey);
-  return { ...e, isFollowing };
-});
+  const sortedEvents = newEvents.slice().sort((a, b) => b.created_at - a.created_at);
+
+  const mappedEvents = sortedEvents.map((e) => {
+    const isFollowing = Array.isArray(followerArray) && followerArray.some(followPk => followPk === e.pubkey);
+    return { ...e, isFollowing };
+  });
   
   console.log(mappedEvents)
   return mappedEvents;
