@@ -57,7 +57,6 @@ export default function App() {
               p: 3,
             }}>
               <Routes>
-                <Route path="/" element={<Feed relays={relays}/>} smallScreen={smallScreen}/>
                 <Route path="/new-event" element={<NewEventForm relays={relays}/>} />
                 <Route path="/profile" element={<Profile relays={relays} profile={profile} smallScreen={smallScreen} />} />
                 <Route path="/feed" element={<Feed relays={relays} smallScreen={smallScreen}/>} />

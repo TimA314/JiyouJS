@@ -55,7 +55,7 @@ const SmallScreenAvatar = styled('div')(({ theme }) => ({
 
 const styles = {
   banner: {
-      height: 400,
+      height: 350,
       backgroundImage: `url(${profileRef.current.banner})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -167,9 +167,6 @@ if(privateKey){
                 src={profileRef.current.picture ? profileRef.current.picture : "https://api.dicebear.com/5.x/bottts/svg?seed=Cookie&mouth=smile01,smile02&sides=antenna01,cables01,cables02,round,square,squareAssymetric&top=antenna,antennaCrooked,glowingBulb01,glowingBulb02,lights,radar,bulb01"}
                 sx={{ width: 200, height: 200}}
                 />
-            <Typography variant="h6" alignSelf="center" margin="15px" display="flex" >
-              {profileRef.current.name}
-            </Typography>
           </StyledToolbar>
         </AppBar>
       </Paper>
