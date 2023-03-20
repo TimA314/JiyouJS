@@ -53,15 +53,22 @@ const SmallScreenAvatar = styled('div')(({ theme }) => ({
 }));
 
 const styles = {
-  paperContainer: {
-      banner: `url(${profileRef.current.banner})`
+  banner: {
+      height: 400,
+      backgroundImage: `url(${profileRef.current.banner})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      //width: `calc(100vw + 48px)`,
+      margin: -24,
+      padding: 24,
   }
 };
 
-// ----------------------------------------------------------------------
-
 const StyledContent = smallScreen ? SmallScreenStyle : MediumToLargeScreenStyle;
 const StyledToolbar = smallScreen ? SmallScreenAvatar : MediumToLargeAvatar;
+
+// ----------------------------------------------------------------------
+
 
 useEffect(() => {
   if (!privateKey || privateKey === "") navigate("/signin", {replace: true});
@@ -142,8 +149,8 @@ const handleLogout = (e) => {
 if(privateKey){
   return (
     <Box width="100%">
-      <Paper ref={profileRef} style={styles.Banner}>
-        <AppBar position="static" >
+      <Paper ref={profileRef} style={styles.banner}>
+        <AppBar position="static" style={{ background: 'transparent', boxShadow: 'none'}} >
           <Box>
               <Button type="button" onClick={handleLogout}>Logout</Button>
           </Box>
