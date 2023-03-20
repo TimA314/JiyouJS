@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ImageIcon from '@mui/icons-material/Image';
 import BadgeIcon from '@mui/icons-material/Badge';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
 
 export default function Profile(props) {
@@ -96,17 +97,18 @@ useEffect(() => {
 
 const handleFormSubmit = (e) => {
   e.preventDefault();
+  let profileNameInput = document.getElementById("profileNameInput");
+  let profileAboutInput = document.getElementById("profileAboutInput");
   let imageUrlInput = document.getElementById("profileImageUrlInput");
   let bannerUrlInput = document.getElementById("bannerImageUrlInput");
-  let profileNameInput = document.getElementById("profileNameInput");
   console.log(imageUrlInput.value, bannerUrlInput.value);
-  updateProfileEvent(profileNameInput.value, imageUrlInput.value, bannerUrlInput.value);
+  updateProfileEvent(profileNameInput.value, profileAboutInput.value, imageUrlInput.value, bannerUrlInput.value);
 }
 
-const updateProfileEvent = async (profileNameInput, imageUrlInput, bannerUrlInput) => {
+const updateProfileEvent = async (profileNameInput, profileAboutInput, imageUrlInput, bannerUrlInput) => {
   let prof = await pool.list(relays, [{kinds: [0], authors: [getPublicKey(privateKey)], limit: 1 }])
 
-  const newContent = JSON.stringify({name: profileNameInput, about: "", picture: imageUrlInput.toString(), banner: bannerUrlInput});
+  const newContent = JSON.stringify({name: profileNameInput, about: profileAboutInput, picture: imageUrlInput.toString(), banner: bannerUrlInput});
 
   let newProfileEvent = {
       kind: 0,
@@ -191,6 +193,21 @@ if(privateKey){
                       </InputAdornment>
                   }}
                   />
+                <TextField 
+                  id="profileAboutInput"
+                  label="About"
+                  color='secondary'
+                  defaultValue={profileRef.current.about} 
+                  fullWidth
+                  multiline
+                  rows={4}
+                  InputProps={{
+                    startAdornment: 
+                      <InputAdornment position="start">
+                          <AutoStoriesIcon />
+                      </InputAdornment>
+                  }}
+                />     
                 <TextField 
                   id="profileImageUrlInput"
                   label="Profile Image URL"
