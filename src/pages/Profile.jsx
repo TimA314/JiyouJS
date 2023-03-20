@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ImageIcon from '@mui/icons-material/Image';
+import BadgeIcon from '@mui/icons-material/Badge';
 
 
 export default function Profile(props) {
@@ -97,14 +98,15 @@ const handleFormSubmit = (e) => {
   e.preventDefault();
   let imageUrlInput = document.getElementById("profileImageUrlInput");
   let bannerUrlInput = document.getElementById("bannerImageUrlInput");
+  let profileNameInput = document.getElementById("profileNameInput");
   console.log(imageUrlInput.value, bannerUrlInput.value);
-  updateProfileEvent(imageUrlInput.value, bannerUrlInput.value);
+  updateProfileEvent(profileNameInput.value, imageUrlInput.value, bannerUrlInput.value);
 }
 
-const updateProfileEvent = async (imageUrlInput, bannerUrlInput) => {
+const updateProfileEvent = async (profileNameInput, imageUrlInput, bannerUrlInput) => {
   let prof = await pool.list(relays, [{kinds: [0], authors: [getPublicKey(privateKey)], limit: 1 }])
 
-  const newContent = JSON.stringify({name: "JiYou", about: "", picture: imageUrlInput.toString(), banner: bannerUrlInput});
+  const newContent = JSON.stringify({name: profileNameInput, about: "", picture: imageUrlInput.toString(), banner: bannerUrlInput});
 
   let newProfileEvent = {
       kind: 0,
@@ -176,6 +178,19 @@ if(privateKey){
               <Button variant="contained" type='submit' color='success' onClick={handleFormSubmit}>
                   SAVE
                 </Button>
+                <TextField 
+                  id="profileNameInput"
+                  label="Name"
+                  color='secondary'
+                  defaultValue={profileRef.current.name} 
+                  fullWidth
+                  InputProps={{
+                    startAdornment: 
+                      <InputAdornment position="start">
+                          <BadgeIcon />
+                      </InputAdornment>
+                  }}
+                  />
                 <TextField 
                   id="profileImageUrlInput"
                   label="Profile Image URL"
