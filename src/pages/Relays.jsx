@@ -1,12 +1,13 @@
-import { Container } from '@mui/system';
+import "./Relays.css";
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon, Paper } from '@mui/material';
+import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon, Paper, styled } from '@mui/material';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import toastr from 'toastr';
 import { getPublicKey, SimplePool } from 'nostr-tools';
 import { useNavigate } from 'react-router';
 import { isValidKey } from '../NostrFunctions';
+import { Margin } from '@mui/icons-material';
 
 export default function Relays(props) {
     const [relayInput, setRelayInput] = useState("");
@@ -14,6 +15,11 @@ export default function Relays(props) {
     const relayList =  props.relays;
     const navigate = useNavigate();
     const pool = useRef(new SimplePool())
+    const smallScreen = props.smallScreen;
+
+// ----------------------------------------------------------------------
+
+  // ----------------------------------------------------------------------
 
     useEffect(() => {
         if (!isValidKey(privateKey)) navigate("/signin", {replace: true});
@@ -59,7 +65,7 @@ export default function Relays(props) {
     
 
     return (
-        <Container sx={{ width: "50%", justifyContent: "center", alignItems: "center"}}>
+        <Box id="RelaysBox">
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
                 Relays
             </Typography>
@@ -67,20 +73,20 @@ export default function Relays(props) {
             <List>
                 {relayList.map(relay => {
                     return (
-                        <Paper key={relay} sx={{margin: "10px"}}>
+                        <Paper key={relay} className="relayItem">
                             <ListItem >
-                                <Grid container>
+                                <Grid container >
                                     <Grid item={true} xs={1}>
                                             <ListItemIcon>
                                                 <SettingsInputAntennaIcon />
                                             </ListItemIcon>
                                     </Grid>
-                                    <Grid item={true} xs={10}>
-                                        <Typography >
+                                    <Grid item={true} xs={10} >
+                                        <Typography variant="body2" sx={{marginLeft: "7px"}}>
                                             {relay}
                                         </Typography>
                                     </Grid>
-                                    <Grid item={true} xs={1}>
+                                    <Grid item={true} xs={1} >
                                         <Button onClick={() => DeleteRelay(relay)}>
                                             <DeleteForeverIcon /> 
                                         </Button>
@@ -92,7 +98,7 @@ export default function Relays(props) {
                 })}
             </List>
 
-            <Box >
+            <Box id="relayform">
                 <TextField
                 id="addRelayInput"
                 label="New Relay"
@@ -100,9 +106,9 @@ export default function Relays(props) {
                 onChange={(e) => handleRelayInputChange(e)}
                 helperText="wss://example.com"
                 />
-                <Button color='secondary' onClick={handleAddRelay}>Add Relay</Button>
-                <Button color='warning' onClick={handleAddRelay}>Save Relays Publicly</Button>
+                <Button sx={{margin: "5px"}} variant='outlined' color='secondary' onClick={handleAddRelay}>Add Relay</Button>
+                <Button sx={{margin: "5px"}} variant='outlined' color='warning' onClick={handleAddRelay}>Save Relays Publicly</Button>
             </Box>
-        </Container>
+            </Box>
     )
 }

@@ -25,6 +25,8 @@ export default function App() {
     "wss://no.str.cr"
   ]);
   const [profile, setProfile] = React.useState(null);
+  const smallScreen = useMediaQuery('(max-width:600px)');
+
 
 
 
@@ -55,13 +57,13 @@ export default function App() {
               p: 3,
             }}>
               <Routes>
-                <Route path="/" element={<Feed relays={relays}/>} />
+                <Route path="/" element={<Feed relays={relays}/>} smallScreen={smallScreen}/>
                 <Route path="/new-event" element={<NewEventForm relays={relays}/>} />
-                <Route path="/profile" element={<Profile relays={relays} profile={profile} />} />
-                <Route path="/feed" element={<Feed relays={relays} />} />
-                <Route path="/follows" element={<FollowerFeed relays={relays} />} />
-                <Route path="/relays" element={<Relays relays={relays} setRelays={setRelays} />} />
-                <Route path="/signin" element={<SignIn relays={relays} setProfile={setProfile} />} />
+                <Route path="/profile" element={<Profile relays={relays} profile={profile} smallScreen={smallScreen} />} />
+                <Route path="/feed" element={<Feed relays={relays} smallScreen={smallScreen}/>} />
+                <Route path="/follows" element={<FollowerFeed relays={relays} smallScreen={smallScreen}/>} />
+                <Route path="/relays" element={<Relays relays={relays} setRelays={setRelays} smallScreen={smallScreen}/>} />
+                <Route path="/signin" element={<SignIn relays={relays} setProfile={setProfile} smallScreen={smallScreen} />} />
               </Routes>
               <NavBar/>
           </Container>

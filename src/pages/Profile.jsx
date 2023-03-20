@@ -1,16 +1,15 @@
-import { AppBar, Avatar, Box, Button, Card, FormControl, IconButton, InputAdornment, MenuItem, Paper, Stack, TextField, Toolbar, Typography, useTheme } from '@mui/material'
+import { AppBar, Avatar, Box, Button, IconButton, InputAdornment, MenuItem, Paper, Stack, TextField, Toolbar, Typography} from '@mui/material'
 import { styled } from '@mui/system';
 import { getEventHash, getPublicKey, signEvent, SimplePool, validateEvent, verifySignature } from 'nostr-tools';
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import ImageIcon from '@mui/icons-material/Image';
 import BadgeIcon from '@mui/icons-material/Badge';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
 
 export default function Profile(props) {
-const smallScreen = useMediaQuery('(max-width:600px)');
+const smallScreen = props.smallScreen;
 const [getProfileEvent, setGetProfileEvent] = useState(true);
 const profileRef = useRef({});
 const privateKey = window.localStorage.getItem("localPk");
