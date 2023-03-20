@@ -11,7 +11,6 @@ import Box from '@mui/material/Box';
 
 export default function NavBar(props) {
   const privateKey = window.localStorage.getItem("localPk");
-  const [value, setValue] = React.useState(0);
   const ref = React.useRef(null);
   
   React.useEffect(() => {
@@ -24,14 +23,8 @@ export default function NavBar(props) {
   return (
     <Box sx={{ pb: 7 }} ref={ref}>
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-        <BottomNavigation
-          showLabels
-          value={value}
-          onChange={(event, newValue) => {
-            setValue(newValue);
-          }}
-        >
-          <BottomNavigationAction label="Feed" href='/' icon={<PublicIcon />} />
+        <BottomNavigation showLabels >
+          <BottomNavigationAction label="Feed" href='/feed' icon={<PublicIcon />} />
           <BottomNavigationAction label="Follows" href='/follows' icon={<Diversity1Icon />} />
           <BottomNavigationAction label="Relays" href='/relays' icon={<CellTowerIcon />} />
           <BottomNavigationAction label="Profile" href='/profile' icon={<AccountCircleIcon />} />
