@@ -5,7 +5,7 @@
 
 Nostr is a simple, open protocol that enables global, decentralized, and censorship-resistant social media.
 
-Learn more about Nostr here https://nostr.com/
+Learn more about Nostr here https://nostr.how/
 
 ---
 
