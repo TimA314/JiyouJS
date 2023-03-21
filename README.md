@@ -1,5 +1,13 @@
 # Jiyou
-### Jiyou is a Nostr Client built using React.js and MaterialUI.
+### JiYou is a Nostr Client built using React.js and MaterialUI and Nostr Tools https://github.com/nbd-wtf/nostr-tools
+
+---
+
+Nostr is a simple, open protocol that enables global, decentralized, and censorship-resistant social media.
+
+Learn more about Nostr here https://nostr.com/
+
+---
 
 Jiyou supports the following NIP's:
 
