@@ -4,22 +4,16 @@ import { Button, TextField, Box, Grid, Typography, List, ListItem, ListItemIcon,
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import toastr from 'toastr';
-import { getPublicKey, SimplePool } from 'nostr-tools';
+import { getEventHash, getPublicKey, signEvent, SimplePool, validateEvent, verifySignature } from 'nostr-tools';
 import { useNavigate } from 'react-router';
 import { isValidKey } from '../NostrFunctions';
-import { Margin } from '@mui/icons-material';
 
 export default function Relays(props) {
     const [relayInput, setRelayInput] = useState("");
     const privateKey = window.localStorage.getItem("localPk");
     const relayList =  props.relays;
     const navigate = useNavigate();
-    const pool = useRef(new SimplePool())
-    const smallScreen = props.smallScreen;
-
-// ----------------------------------------------------------------------
-
-  // ----------------------------------------------------------------------
+    const pool = new SimplePool();
 
     useEffect(() => {
         if (!isValidKey(privateKey)) navigate("/signin", {replace: true});
@@ -27,8 +21,18 @@ export default function Relays(props) {
     
     useEffect(() => {
         const getEvents = async () => {
-            let events = await pool.current.list(relayList, [{authors: getPublicKey(privateKey), kinds: [0]}])
-            console.log(events)
+            let currentRelaysEvent = await pool.list(relayList, [{kinds: [10002], authors: [getPublicKey(privateKey)], limit: 1 }])
+            console.log(currentRelaysEvent)
+            if (currentRelaysEvent[0] && currentRelaysEvent[0].tags.length > 0){
+                let eventArray = [];
+                currentRelaysEvent[0].tags.forEach((tag) => {
+                    if(tag[0] === "r") {
+                        eventArray.push(tag[1]);
+                    }
+                })
+                props.setRelays(eventArray)
+                console.log("set relays" + eventArray)
+            }
         }
         getEvents();
     }, [])
@@ -62,7 +66,53 @@ export default function Relays(props) {
         props.setRelays(deletedRelayList);
         toastr.success("Relay Removed.")
     }
+
+    const handleSaveRelays = async () => {
+        let saveRelayPool = new SimplePool();
+        let prevRelays = await saveRelayPool.list(relayList, [{kinds: [10002], authors: [getPublicKey(privateKey)], limit: 1 }])
+        console.log("PrevRelays" + prevRelays)
+
+        const newEvent = newRelayEvent()
+        console.log(newEvent)
+
+        newEvent.id = getEventHash(newEvent);
+        newEvent.sig = signEvent(newEvent, privateKey);
+      
+        if(!validateEvent(newEvent) || !verifySignature(newEvent)){
+          console.log("Event is Invalid")
+          return;
+        }
+        console.log("Event is valid")
+      
+        let pubs = saveRelayPool.publish(relayList, newEvent);
+        console.log("pubs: " + JSON.stringify(pubs));
+        
+        pubs.on("ok", () => {
+          console.log(`Published Event`);
+          return "ok";
+        })
+      
+        pubs.on("failed", reason => {
+            console.log("failed: " + reason);
+            return "failed";
+        })
+    }
     
+    const newRelayEvent = () => {
+        let relayTags = [];
+
+        relayList.forEach(relay => {
+            relayTags.push(["r", relay])
+        });
+
+        return {
+            "content": "",
+            "created_at": Math.floor(Date.now() / 1000),
+            "kind": 10002,
+            "pubkey": getPublicKey(privateKey),
+            "tags": relayTags
+          }
+    }
 
     return (
         <Box id="RelaysBox">
@@ -107,7 +157,7 @@ export default function Relays(props) {
                 helperText="wss://example.com"
                 />
                 <Button sx={{margin: "5px"}} variant='outlined' color='secondary' onClick={handleAddRelay}>Add Relay</Button>
-                <Button sx={{margin: "5px"}} variant='outlined' color='warning' onClick={handleAddRelay}>Save Relays Publicly</Button>
+                <Button sx={{margin: "5px"}} variant='outlined' color='warning' onClick={handleSaveRelays}>Save Relays Publicly</Button>
             </Box>
             </Box>
     )
